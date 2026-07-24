@@ -16,5 +16,5 @@ COPY . .
 # Puerto donde escuchará FastAPI
 EXPOSE 8000
 
-# Comando para iniciar la aplicación
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers", "--forwarded-allow-ips=*"]
+# Comando para iniciar la aplicación con workers para producción
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers", "--forwarded-allow-ips=*", "--workers", "4"]

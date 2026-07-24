@@ -5,25 +5,25 @@ services:
     container_name: postgres
     restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123456
-      POSTGRES_DB: milenio
-    ports:
-      - "5432:5432"
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-milenio}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    # NOTA: No se expone el puerto 5432 por seguridad en producción. 
+    # Solo el backend dentro de la red de Docker puede acceder.
 
   backend:
     build:
       context: ./backend
     container_name: backend
     restart: always
-    ports:
-      - "8000:8000"
     env_file:
       - .env
     depends_on:
       - postgres
+    # NOTA: No se expone el puerto 8000 por seguridad en producción.
+    # Nginx en el contenedor frontend se encargará de enrutar el tráfico /api/ hacia el backend.
 
   frontend:
     build:
@@ -31,7 +31,7 @@ services:
     container_name: frontend
     restart: always
     ports:
-      - "5173:80"
+      - "80:80"
     depends_on:
       - backend
 
