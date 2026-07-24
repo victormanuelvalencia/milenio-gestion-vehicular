@@ -115,7 +115,7 @@ const toggleCategoria = (cat) => {
             </div>
           </li>
 
-          <!-- Link Directo a Reportes -->
+          <!-- Link Directo a Reportes y Usuarios -->
           <li class="pt-2 mt-2 border-t border-slate-700/50">
             <RouterLink
               to="/reportes"
@@ -123,6 +123,15 @@ const toggleCategoria = (cat) => {
               active-class="bg-blue-600 text-white shadow-md hover:bg-blue-600"
             >
               <span class="font-medium text-sm">Reportes</span>
+            </RouterLink>
+          </li>
+          <li>
+            <RouterLink
+              to="/usuarios"
+              class="flex items-center px-4 py-3 rounded-lg transition-colors duration-200 text-slate-300 hover:bg-slate-700"
+              active-class="bg-blue-600 text-white shadow-md hover:bg-blue-600"
+            >
+              <span class="font-medium text-sm">Administración de usuarios</span>
             </RouterLink>
           </li>
           
@@ -162,7 +171,7 @@ const toggleCategoria = (cat) => {
                 <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
-            <span class="text-sm font-medium">Administrador</span>
+            <span class="text-sm font-medium">{{ authStore.userNombre }}</span>
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
             </svg>
@@ -175,7 +184,8 @@ const toggleCategoria = (cat) => {
           >
             <div class="px-4 py-2 border-b border-gray-100">
               <p class="text-xs text-gray-400">Sesión activa</p>
-              <p class="text-sm font-semibold text-gray-700">Administrador</p>
+              <p class="text-sm font-semibold text-gray-700">{{ authStore.userNombre }}</p>
+              <p class="text-xs text-blue-600 font-medium mt-0.5">{{ authStore.userRol }}</p>
             </div>
             <button
               id="btn-cerrar-sesion"

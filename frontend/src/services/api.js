@@ -10,7 +10,9 @@ const api = axios.create({
 
 // Interceptor para inyectar el token en cada petición
 api.interceptors.request.use((config) => {
-  console.log("URL que Axios enviará:", config.baseURL + config.url);
+  console.log("Origin:", window.location.origin);
+  console.log("BaseURL:", config.baseURL);
+  console.log("URL:", config.url);
 
   const authStore = useAuthStore();
 

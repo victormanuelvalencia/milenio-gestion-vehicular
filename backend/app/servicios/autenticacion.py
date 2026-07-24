@@ -30,7 +30,8 @@ def autenticar_usuario(bd: Session, correo: str, contrasena: str) -> Token:
 
     tiempo_expiracion_acceso = timedelta(minutes=configuraciones.MINUTOS_EXPIRACION_TOKEN)
     token_acceso = crear_token_acceso(
-        datos={"sub": usuario.correo}, tiempo_expiracion=tiempo_expiracion_acceso
+        datos={"sub": usuario.correo, "rol": usuario.rol, "nombre": usuario.nombre},
+        tiempo_expiracion=tiempo_expiracion_acceso
     )
     
     return Token(token_acceso=token_acceso, tipo_token="bearer")

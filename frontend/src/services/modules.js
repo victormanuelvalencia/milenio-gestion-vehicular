@@ -42,3 +42,14 @@ export const reportesService = {
   costosEntreFechas: (params) => api.get('/reportes/costos-entre-fechas', { params }),
   gastosPorProveedor: (params) => api.get('/reportes/gastos-por-proveedor', { params }),
 }
+
+export const usuariosService = {
+  obtenerTodos: () => api.get('/usuarios'),
+  obtenerPorId: (id) => api.get(`/usuarios/${id}`),
+  crear: (datos) => api.post('/usuarios', datos),
+  actualizar: (id, datos) => api.put(`/usuarios/${id}`, datos),
+  eliminar: (id) => api.delete(`/usuarios/${id}`),
+  cambiarEstado: (id, activo) => api.patch(`/usuarios/${id}/estado`, { activo }),
+  cambiarRol: (id, rol) => api.patch(`/usuarios/${id}/rol`, { rol }),
+  cambiarContrasena: (id, datos) => api.patch(`/usuarios/${id}/contrasena`, datos),
+}

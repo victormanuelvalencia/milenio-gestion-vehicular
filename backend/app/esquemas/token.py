@@ -10,3 +10,4 @@ class Token(BaseModel):
 
 class DatosToken(BaseModel):
     correo: str | None = None
+    rol: str | None = None

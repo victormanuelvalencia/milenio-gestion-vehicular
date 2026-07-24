@@ -110,6 +110,12 @@ const router = createRouter({
           name: 'Reporte Gastos por Proveedor',
           component: () => import('@/views/reportes/GastosPorProveedor.vue'),
         },
+        // Usuarios
+        {
+          path: 'usuarios',
+          name: 'Administración de Usuarios',
+          component: () => import('@/views/usuarios/GestionarUsuarios.vue'),
+        },
       ],
     },
   ],
