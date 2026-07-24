@@ -166,38 +166,29 @@ onMounted(cargarTipos)
     </div>
 
     <!-- Modal de Creación -->
-    <div v-if="mostrarModalCrear" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div class="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden flex flex-col max-h-full">
+    <div v-if="mostrarModalCrear" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-slate-50">
           <h3 class="text-lg font-bold text-gray-800">Crear Tipo de Gasto</h3>
-          <button @click="cerrarModalCrear" class="text-gray-400 hover:text-gray-600 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-            </svg>
+          <button @click="cerrarModalCrear" class="text-gray-400 hover:text-gray-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
           </button>
         </div>
-        
-        <div class="p-6 overflow-y-auto">
-          <div v-if="errorCrear" class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+        <form @submit.prevent="crearTipo" class="p-6 space-y-4">
+          <div v-if="errorCrear" class="p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
             {{ errorCrear }}
           </div>
-          
-          <form @submit.prevent="crearTipo" class="space-y-4">
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-1">Nombre *</label>
-              <input v-model="formularioCreacion.nombre" required placeholder="ej. Gasolina" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            </div>
-            
-            <div class="flex gap-3 pt-4 border-t border-gray-100 mt-6">
-              <button type="button" @click="cerrarModalCrear" class="flex-1 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg transition-colors text-sm">
-                Cancelar
-              </button>
-              <button type="submit" :disabled="creando" class="flex-1 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold rounded-lg transition-colors text-sm shadow-sm">
-                {{ creando ? 'Guardando...' : 'Crear Tipo' }}
-              </button>
-            </div>
-          </form>
-        </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nombre *</label>
+            <input v-model="formularioCreacion.nombre" required placeholder="ej. Gasolina" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" />
+          </div>
+          <div class="pt-4 flex justify-end gap-3 border-t border-gray-100 mt-6">
+            <button type="button" @click="cerrarModalCrear" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Cancelar</button>
+            <button type="submit" :disabled="creando" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 disabled:opacity-50">
+              {{ creando ? 'Guardando...' : 'Crear Tipo' }}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
