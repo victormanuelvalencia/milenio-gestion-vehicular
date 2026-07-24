@@ -74,6 +74,42 @@ const router = createRouter({
           name: 'Crear Proveedor',
           component: () => import('@/views/proveedores/CrearProveedor.vue'),
         },
+        // Reportes
+        {
+          path: 'reportes',
+          name: 'Reportes',
+          component: () => import('@/views/reportes/ReportesView.vue'),
+        },
+        {
+          path: 'reportes/gastos-por-vehiculo',
+          name: 'Reporte Gastos por Vehículo',
+          component: () => import('@/views/reportes/GastosPorVehiculo.vue'),
+        },
+        {
+          path: 'reportes/gastos-por-mes',
+          name: 'Reporte Gastos por Mes',
+          component: () => import('@/views/reportes/GastosPorMes.vue'),
+        },
+        {
+          path: 'reportes/gastos-por-tipo',
+          name: 'Reporte Gastos por Tipo',
+          component: () => import('@/views/reportes/GastosPorTipo.vue'),
+        },
+        {
+          path: 'reportes/historial-vehiculo',
+          name: 'Reporte Historial Vehículo',
+          component: () => import('@/views/reportes/HistorialVehiculo.vue'),
+        },
+        {
+          path: 'reportes/costos-fechas',
+          name: 'Reporte Costos entre Fechas',
+          component: () => import('@/views/reportes/CostosEntreFechas.vue'),
+        },
+        {
+          path: 'reportes/gastos-proveedor',
+          name: 'Reporte Gastos por Proveedor',
+          component: () => import('@/views/reportes/GastosPorProveedor.vue'),
+        },
       ],
     },
   ],

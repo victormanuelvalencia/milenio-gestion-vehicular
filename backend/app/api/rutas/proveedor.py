@@ -14,7 +14,7 @@ enrutador = APIRouter(
 )
 
 @enrutador.get("/", response_model=List[ProveedorRespuesta])
-def obtener_proveedores(skip: int = 0, limit: int = 10, bd: Session = Depends(obtener_bd)):
+def obtener_proveedores(skip: int = 0, limit: int = 1000, bd: Session = Depends(obtener_bd)):
     return servicio_proveedor.obtener_todos(bd, skip=skip, limit=limit)
 
 @enrutador.get("/{id_proveedor}", response_model=ProveedorRespuesta)

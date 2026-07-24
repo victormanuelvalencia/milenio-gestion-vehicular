@@ -24,6 +24,13 @@ class GastoActualizar(BaseModel):
     proveedor_manual: Optional[str] = None
     observaciones: Optional[str] = None
 
+from app.esquemas.vehiculo import VehiculoRespuesta
+from app.esquemas.tipo_gasto import TipoGastoRespuesta
+from app.esquemas.proveedor import ProveedorRespuesta
+
 class GastoRespuesta(GastoBase):
     id: int
+    vehiculo: Optional[VehiculoRespuesta] = None
+    tipo_gasto: Optional[TipoGastoRespuesta] = None
+    proveedor: Optional[ProveedorRespuesta] = None
     model_config = ConfigDict(from_attributes=True)

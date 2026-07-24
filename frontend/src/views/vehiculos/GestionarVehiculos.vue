@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { vehiculosService } from '@/services/modules'
 
 const vehiculos = ref([])
@@ -57,6 +57,15 @@ const cambiarEstado = async (vehiculo) => {
   }
 }
 
+const POR_PAGINA = 15
+const paginaActual = ref(1)
+const totalPaginas = computed(() => Math.ceil(vehiculos.value.length / POR_PAGINA))
+const vehiculosPaginados = computed(() => {
+  const inicio = (paginaActual.value - 1) * POR_PAGINA
+  return vehiculos.value.slice(inicio, inicio + POR_PAGINA)
+})
+const irPagina = (n) => { if (n >= 1 && n <= totalPaginas.value) paginaActual.value = n }
+
 onMounted(cargarVehiculos)
 </script>
 
@@ -95,7 +104,7 @@ onMounted(cargarVehiculos)
           </tr>
           <!-- Fila Normal -->
           <tr
-            v-for="v in vehiculos"
+            v-for="v in vehiculosPaginados"
             :key="v.id"
             class="hover:bg-slate-50 transition-colors"
             v-show="editando !== v.id"
@@ -113,26 +122,29 @@ onMounted(cargarVehiculos)
               </span>
             </td>
             <td class="px-4 py-3">
-              <div class="flex items-center justify-center gap-2">
+              <div class="flex items-center justify-center gap-3">
                 <button
                   @click="iniciarEdicion(v)"
-                  class="w-24 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-md transition-colors"
+                  title="Editar"
+                  class="text-blue-500 hover:text-blue-700 transition-colors"
                 >
-                  Editar
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>
                 </button>
                 <button
                   @click="cambiarEstado(v)"
-                  class="w-24 px-3 py-1.5 text-xs font-bold rounded-md transition-colors text-white"
-                  :class="v.estado ? 'bg-orange-500 hover:bg-orange-600' : 'bg-green-600 hover:bg-green-700'"
+                  :title="v.estado ? 'Desactivar' : 'Activar'"
+                  :class="v.estado ? 'text-orange-500 hover:text-orange-700' : 'text-green-600 hover:text-green-800'"
+                  class="transition-colors"
                 >
-                  {{ v.estado ? 'Desactivar' : 'Activar' }}
+                  <svg v-if="v.estado" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                  <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
                 </button>
               </div>
             </td>
           </tr>
           <!-- Fila de Edición Inline -->
           <tr
-            v-for="v in vehiculos"
+            v-for="v in vehiculosPaginados"
             :key="'edit-' + v.id"
             v-show="editando === v.id"
             class="bg-blue-50 border-l-4 border-blue-500"
@@ -153,14 +165,33 @@ onMounted(cargarVehiculos)
               <span class="px-2 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">Editando</span>
             </td>
             <td class="px-4 py-3">
-              <div class="flex justify-center gap-2">
-                <button @click="guardarEdicion(v.id)" class="w-24 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-md transition-colors">Guardar</button>
-                <button @click="cancelarEdicion" class="w-24 px-3 py-1.5 bg-gray-400 hover:bg-gray-500 text-white text-xs font-bold rounded-md transition-colors">Cancelar</button>
+              <div class="flex justify-center gap-3">
+                <button @click="guardarEdicion(v.id)" title="Guardar" class="text-green-600 hover:text-green-800 transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                </button>
+                <button @click="cancelarEdicion" title="Cancelar" class="text-gray-400 hover:text-gray-600 transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+                </button>
               </div>
             </td>
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- Paginación -->
+    <div v-if="totalPaginas > 1" class="flex items-center justify-center gap-1 mt-4">
+      <button @click="irPagina(paginaActual - 1)" :disabled="paginaActual === 1" class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed bg-white border border-gray-200 text-gray-600 hover:bg-slate-50">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
+      </button>
+      <button v-for="p in totalPaginas" :key="p" @click="irPagina(p)"
+        class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border"
+        :class="p === paginaActual ? 'bg-slate-800 text-white border-slate-800' : 'bg-white border-gray-200 text-gray-600 hover:bg-slate-50'"
+      >{{ p }}</button>
+      <button @click="irPagina(paginaActual + 1)" :disabled="paginaActual === totalPaginas" class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed bg-white border border-gray-200 text-gray-600 hover:bg-slate-50">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+      </button>
+      <span class="ml-2 text-sm text-gray-500">Página {{ paginaActual }} de {{ totalPaginas }} · {{ vehiculos.length }} registros</span>
     </div>
   </div>
 </template>

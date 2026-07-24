@@ -14,7 +14,7 @@ enrutador = APIRouter(
 )
 
 @enrutador.get("/", response_model=List[GastoRespuesta])
-def obtener_gastos(skip: int = 0, limit: int = 10, bd: Session = Depends(obtener_bd)):
+def obtener_gastos(skip: int = 0, limit: int = 1000, bd: Session = Depends(obtener_bd)):
     return servicio_gasto.obtener_todos(bd, skip=skip, limit=limit)
 
 @enrutador.get("/{id_gasto}", response_model=GastoRespuesta)

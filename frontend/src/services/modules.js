@@ -33,3 +33,12 @@ export const gastosService = {
   actualizar: (id, datos) => api.put(`/gastos/${id}`, datos),
   eliminar: (id) => api.delete(`/gastos/${id}`),
 }
+
+export const reportesService = {
+  gastosPorVehiculo: (params) => api.get('/reportes/gastos-por-vehiculo', { params }),
+  gastosPorMes: (params) => api.get('/reportes/gastos-por-mes', { params }),
+  gastosPorTipo: (params) => api.get('/reportes/gastos-por-tipo', { params }),
+  historialVehiculo: (params) => api.get('/reportes/historial-vehiculo', { params }),
+  costosEntreFechas: (params) => api.get('/reportes/costos-entre-fechas', { params }),
+  gastosPorProveedor: (params) => api.get('/reportes/gastos-por-proveedor', { params }),
+}
