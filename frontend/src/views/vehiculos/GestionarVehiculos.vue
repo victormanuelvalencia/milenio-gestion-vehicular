@@ -9,6 +9,18 @@ const editando = ref(null)
 const formularioEdicion = ref({})
 const mensajeExito = ref('')
 
+// Creación
+const mostrarModalCrear = ref(false)
+const creando = ref(false)
+const errorCrear = ref('')
+const formularioCreacion = ref({
+  placa: '',
+  marca: '',
+  modelo: '',
+  ano: new Date().getFullYear(),
+  estado: true,
+})
+
 const cargarVehiculos = async () => {
   cargando.value = true
   error.value = ''
@@ -19,6 +31,37 @@ const cargarVehiculos = async () => {
     error.value = 'Error al cargar los vehículos.'
   } finally {
     cargando.value = false
+  }
+}
+
+const abrirModalCrear = () => {
+  errorCrear.value = ''
+  formularioCreacion.value = {
+    placa: '',
+    marca: '',
+    modelo: '',
+    ano: new Date().getFullYear(),
+    estado: true,
+  }
+  mostrarModalCrear.value = true
+}
+
+const cerrarModalCrear = () => {
+  mostrarModalCrear.value = false
+}
+
+const crearVehiculo = async () => {
+  errorCrear.value = ''
+  creando.value = true
+  try {
+    await vehiculosService.crear(formularioCreacion.value)
+    mensajeExito.value = '¡Vehículo creado exitosamente!'
+    cerrarModalCrear()
+    await cargarVehiculos()
+  } catch (e) {
+    errorCrear.value = e.response?.data?.detail || 'Error al crear el vehículo. Verifica los datos.'
+  } finally {
+    creando.value = false
   }
 }
 
@@ -71,8 +114,17 @@ onMounted(cargarVehiculos)
 
 <template>
   <div>
-    <div class="mb-6 text-center">
+    <div class="mb-6 flex justify-between items-center">
       <h2 class="text-2xl font-bold text-gray-800">Gestión de Vehículos</h2>
+      <button
+        @click="abrirModalCrear"
+        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 transition-colors shadow-sm"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+        </svg>
+        Nuevo Vehículo
+      </button>
     </div>
 
     <div v-if="mensajeExito" class="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm flex justify-between">
@@ -192,6 +244,67 @@ onMounted(cargarVehiculos)
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
       </button>
       <span class="ml-2 text-sm text-gray-500">Página {{ paginaActual }} de {{ totalPaginas }} · {{ vehiculos.length }} registros</span>
+    </div>
+
+    <!-- Modal de Creación -->
+    <div v-if="mostrarModalCrear" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden flex flex-col max-h-full">
+        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-slate-50">
+          <h3 class="text-lg font-bold text-gray-800">Crear Vehículo</h3>
+          <button @click="cerrarModalCrear" class="text-gray-400 hover:text-gray-600 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </button>
+        </div>
+        
+        <div class="p-6 overflow-y-auto">
+          <div v-if="errorCrear" class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+            {{ errorCrear }}
+          </div>
+          
+          <form @submit.prevent="crearVehiculo" class="space-y-4">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1">Placa *</label>
+              <input v-model="formularioCreacion.placa" required placeholder="ej. ABC123" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1">Marca *</label>
+              <input v-model="formularioCreacion.marca" required placeholder="ej. Chevrolet" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1">Modelo *</label>
+              <input v-model="formularioCreacion.modelo" required placeholder="ej. FRR" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1">Año *</label>
+              <input v-model.number="formularioCreacion.ano" type="number" required min="1900" :max="new Date().getFullYear() + 1" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1">Estado inicial</label>
+              <div class="flex gap-4">
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="radio" :value="true" v-model="formularioCreacion.estado" class="text-blue-600" />
+                  <span class="text-sm text-gray-700">Activo</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="radio" :value="false" v-model="formularioCreacion.estado" class="text-blue-600" />
+                  <span class="text-sm text-gray-700">Inactivo</span>
+                </label>
+              </div>
+            </div>
+            
+            <div class="flex gap-3 pt-4 border-t border-gray-100 mt-6">
+              <button type="button" @click="cerrarModalCrear" class="flex-1 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg transition-colors text-sm">
+                Cancelar
+              </button>
+              <button type="submit" :disabled="creando" class="flex-1 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold rounded-lg transition-colors text-sm shadow-sm">
+                {{ creando ? 'Guardando...' : 'Crear Vehículo' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
 </template>

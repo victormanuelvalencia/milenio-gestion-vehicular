@@ -23,9 +23,13 @@ const props = defineProps({
     type: Object,
     default: null,
   },
+  enModal: {
+    type: Boolean,
+    default: false
+  }
 })
 
-const emit = defineEmits(['guardado'])
+const emit = defineEmits(['guardado', 'cancelado'])
 const router = useRouter()
 
 const cargando = ref(false)
@@ -102,7 +106,9 @@ const handleSubmit = async () => {
       mensajeExito.value = 'Gasto actualizado correctamente.'
     }
     emit('guardado')
-    setTimeout(() => router.push('/gastos'), 1500)
+    if (!props.enModal) {
+      setTimeout(() => router.push('/gastos'), 1500)
+    }
   } catch (e) {
     error.value = e.response?.data?.detail || 'Error al guardar el gasto.'
   } finally {
@@ -176,7 +182,10 @@ watch(() => props.gastoInicial, inicializarFormulario)
           </div>
         </div>
         <div class="pt-2">
-          <RouterLink to="/gastos" class="inline-block px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-lg text-sm transition-colors">
+          <button v-if="enModal" type="button" @click="$emit('cancelado')" class="inline-block px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-lg text-sm transition-colors">
+            Cerrar
+          </button>
+          <RouterLink v-else to="/gastos" class="inline-block px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-lg text-sm transition-colors">
             Cerrar
           </RouterLink>
         </div>
@@ -241,7 +250,10 @@ watch(() => props.gastoInicial, inicializarFormulario)
           >
             {{ cargando ? 'Guardando...' : (modo === 'editar' ? 'Actualizar Gasto' : 'Registrar Gasto') }}
           </button>
-          <RouterLink to="/gastos" class="flex-1 py-2.5 text-center bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-lg text-sm transition-colors">
+          <button v-if="enModal" type="button" @click="$emit('cancelado')" class="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-lg transition-colors text-sm">
+            Cancelar
+          </button>
+          <RouterLink v-else to="/gastos" class="flex-1 py-2.5 text-center bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-lg text-sm transition-colors">
             Cancelar
           </RouterLink>
         </div>

@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { gastosService, vehiculosService, tiposGastoService, proveedoresService } from '@/services/modules'
+import FormularioGasto from '@/components/gastos/FormularioGasto.vue'
 
 const router = useRouter()
 const gastos = ref([])
@@ -11,6 +12,15 @@ const proveedores = ref([])
 const cargando = ref(false)
 const error = ref('')
 const mensajeExito = ref('')
+
+const mostrarModalCrear = ref(false)
+const abrirModalCrear = () => { mostrarModalCrear.value = true }
+const cerrarModalCrear = () => { mostrarModalCrear.value = false }
+const onGastoCreado = async () => {
+  cerrarModalCrear()
+  mensajeExito.value = 'Gasto registrado exitosamente.'
+  await cargarDatos()
+}
 
 const POR_PAGINA = 15
 const paginaActual = ref(1)
@@ -83,8 +93,17 @@ onMounted(cargarDatos)
 
 <template>
   <div>
-    <div class="mb-6 text-center">
+    <div class="mb-6 flex justify-between items-center">
       <h2 class="text-2xl font-bold text-gray-800">Gestión de Gastos</h2>
+      <button
+        @click="abrirModalCrear"
+        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 transition-colors shadow-sm"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+        </svg>
+        Nuevo Gasto
+      </button>
     </div>
 
     <div v-if="mensajeExito" class="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm flex justify-between">
@@ -162,6 +181,15 @@ onMounted(cargarDatos)
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
       </button>
       <span class="ml-2 text-sm text-gray-500">Página {{ paginaActual }} de {{ totalPaginas }} · {{ gastos.length }} registros</span>
+    </div>
+
+    <!-- Modal de Creación -->
+    <div v-if="mostrarModalCrear" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div class="bg-gray-50 rounded-xl shadow-xl w-full max-w-2xl max-h-[95vh] overflow-y-auto">
+        <div class="p-6">
+          <FormularioGasto modo="crear" :enModal="true" @guardado="onGastoCreado" @cancelado="cerrarModalCrear" />
+        </div>
+      </div>
     </div>
   </div>
 </template>

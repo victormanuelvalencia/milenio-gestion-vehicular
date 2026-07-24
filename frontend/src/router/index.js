@@ -26,21 +26,11 @@ const router = createRouter({
           name: 'Gestión de Vehículos',
           component: () => import('@/views/vehiculos/GestionarVehiculos.vue'),
         },
-        {
-          path: 'vehiculos/crear',
-          name: 'Crear Vehículo',
-          component: () => import('@/views/vehiculos/CrearVehiculo.vue'),
-        },
         // Gastos
         {
           path: 'gastos',
           name: 'Gestión de Gastos',
           component: () => import('@/views/gastos/GestionarGastos.vue'),
-        },
-        {
-          path: 'gastos/crear',
-          name: 'Crear Gasto',
-          component: () => import('@/views/gastos/CrearGasto.vue'),
         },
         {
           path: 'gastos/:id/editar',
@@ -58,21 +48,11 @@ const router = createRouter({
           name: 'Tipos de Gasto',
           component: () => import('@/views/tipos/GestionarTipos.vue'),
         },
-        {
-          path: 'tipos-gasto/crear',
-          name: 'Crear Tipo de Gasto',
-          component: () => import('@/views/tipos/CrearTipo.vue'),
-        },
         // Proveedores
         {
           path: 'proveedores',
           name: 'Gestión de Proveedores',
           component: () => import('@/views/proveedores/GestionarProveedores.vue'),
-        },
-        {
-          path: 'proveedores/crear',
-          name: 'Crear Proveedor',
-          component: () => import('@/views/proveedores/CrearProveedor.vue'),
         },
         // Reportes
         {

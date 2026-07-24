@@ -18,48 +18,12 @@ const cerrarMenuPerfil = () => {
   menuPerfilAbierto.value = false
 }
 
-const categoriasMenu = ref([
-  {
-    id: 'vehiculos',
-    nombre: 'Vehículos',
-    abierto: false,
-    opciones: [
-      { name: 'Gestionar vehículos', to: '/vehiculos' },
-      { name: 'Crear vehículo', to: '/vehiculos/crear' }
-    ]
-  },
-  {
-    id: 'gastos',
-    nombre: 'Gastos',
-    abierto: false,
-    opciones: [
-      { name: 'Gestionar gastos', to: '/gastos' },
-      { name: 'Crear gasto', to: '/gastos/crear' }
-    ]
-  },
-  {
-    id: 'tipos',
-    nombre: 'Tipos de gasto',
-    abierto: false,
-    opciones: [
-      { name: 'Gestionar tipos de gasto', to: '/tipos-gasto' },
-      { name: 'Crear tipo de gasto', to: '/tipos-gasto/crear' }
-    ]
-  },
-  {
-    id: 'proveedores',
-    nombre: 'Proveedores',
-    abierto: false,
-    opciones: [
-      { name: 'Gestionar proveedores', to: '/proveedores' },
-      { name: 'Crear proveedor', to: '/proveedores/crear' }
-    ]
-  }
-])
-
-const toggleCategoria = (cat) => {
-  cat.abierto = !cat.abierto
-}
+const menuPrincipal = [
+  { name: 'Vehículos', to: '/vehiculos' },
+  { name: 'Gastos', to: '/gastos' },
+  { name: 'Tipos de gasto', to: '/tipos-gasto' },
+  { name: 'Proveedores', to: '/proveedores' }
+]
 </script>
 
 <template>
@@ -86,33 +50,15 @@ const toggleCategoria = (cat) => {
       <nav class="flex-1 overflow-y-auto py-4">
         <ul class="space-y-2 px-3">
           
-          <!-- Acordeones -->
-          <li v-for="cat in categoriasMenu" :key="cat.id" class="flex flex-col">
-            <button
-              @click="toggleCategoria(cat)"
-              class="flex items-center justify-between px-4 py-3 rounded-lg transition-colors duration-200 text-slate-300 hover:bg-slate-700 w-full text-left font-medium text-sm"
+          <!-- Enlaces Directos -->
+          <li v-for="item in menuPrincipal" :key="item.name">
+            <RouterLink
+              :to="item.to"
+              class="flex items-center px-4 py-3 rounded-lg transition-colors duration-200 text-slate-300 hover:bg-slate-700 w-full"
+              active-class="bg-blue-600 text-white shadow-md hover:bg-blue-600"
             >
-              <span>{{ cat.nombre }}</span>
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                class="h-4 w-4 transition-transform duration-200"
-                :class="cat.abierto ? 'rotate-180' : ''"
-                fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            <div v-show="cat.abierto" class="pl-4 mt-1 space-y-1">
-              <RouterLink
-                v-for="opc in cat.opciones"
-                :key="opc.name"
-                :to="opc.to"
-                class="flex items-center px-4 py-2 rounded-lg transition-colors duration-200 text-slate-400 hover:text-white hover:bg-slate-700/50 text-sm"
-                active-class="bg-blue-600/20 text-blue-400 font-semibold"
-              >
-                <span>{{ opc.name }}</span>
-              </RouterLink>
-            </div>
+              <span class="font-medium text-sm">{{ item.name }}</span>
+            </RouterLink>
           </li>
 
           <!-- Link Directo a Reportes y Usuarios -->
