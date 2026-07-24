@@ -15,6 +15,16 @@ app = FastAPI(
     version="1.0.0"
 )
 
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], # En producción cambiar por la URL del frontend
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 from app.api.rutas import autenticacion, vehiculo, tipo_gasto, proveedor, gasto
 
 app.include_router(autenticacion.enrutador, prefix="/api/v1")
