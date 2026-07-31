@@ -19,21 +19,29 @@ app = FastAPI(
 
 @app.exception_handler(IntegrityError)
 async def integrity_error_handler(request: Request, exc: IntegrityError):
-    error_msg = str(exc).lower()
+    error_msg = str(exc.orig).lower() if exc.orig else str(exc).lower()
     if "foreign key" in error_msg or "violates foreign key constraint" in error_msg or "foreign_key" in error_msg or "fk_" in error_msg:
         return JSONResponse(
             status_code=400,
             content={"detail": "No se puede eliminar este registro porque está asociado a uno o más viajes, gastos u otros registros en el sistema."}
         )
-    elif "unique constraint" in error_msg or "violates unique constraint" in error_msg:
+    elif "unique" in error_msg or "duplicate" in error_msg:
         return JSONResponse(
             status_code=400,
-            content={"detail": "Ya existe un registro con estos datos (valor duplicado)."}
+            content={"detail": "Ya existe un registro con estos datos. Por favor verifica e intenta con información diferente."}
+        )
+    
+    # Fallback amigable: si hay FK en el mensaje original del error de SQLAlchemy
+    full_msg = str(exc).lower()
+    if "foreign key" in full_msg or "foreign_key" in full_msg or "fk_" in full_msg or "referenced" in full_msg or "restrict" in full_msg:
+        return JSONResponse(
+            status_code=400,
+            content={"detail": "No se puede eliminar este registro porque está siendo utilizado en otras partes del sistema (viajes, gastos, mantenimientos, etc.)."}
         )
     
     return JSONResponse(
         status_code=400,
-        content={"detail": "Error de integridad en la base de datos. Verifica la información enviada."}
+        content={"detail": "No se puede realizar esta acción porque el registro está siendo utilizado en otras partes del sistema."}
     )
 
 from fastapi.middleware.cors import CORSMiddleware
