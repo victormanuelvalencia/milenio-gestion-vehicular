@@ -57,7 +57,6 @@ onMounted(async () => {
             <p class="text-xs font-semibold text-blue-400 uppercase tracking-wide mb-1">Manifiesto</p>
             <p class="text-sm font-bold text-blue-800">{{ viaje.numero_manifiesto }}</p>
             <p class="text-xs text-blue-600 mt-1">
-              Ruta:
               <span class="font-semibold">{{ viaje.origen }} → {{ viaje.destino }}</span>
             </p>
           </div>
@@ -78,7 +77,6 @@ onMounted(async () => {
           <div class="bg-slate-50 rounded-lg p-4">
             <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Conductor</p>
             <p class="text-sm font-bold text-gray-800">{{ viaje.conductor?.nombre || '—' }}</p>
-            <p v-if="viaje.conductor?.cedula" class="text-xs text-gray-500 mt-0.5">CC: {{ viaje.conductor.cedula }}</p>
           </div>
 
           <!-- Finanzas -->
@@ -89,12 +87,6 @@ onMounted(async () => {
           <div class="bg-slate-50 rounded-lg p-4">
             <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Anticipo</p>
             <p class="text-sm font-bold text-orange-600">{{ formatMoneda(viaje.anticipo) }}</p>
-          </div>
-          <div class="bg-slate-50 rounded-lg p-4 col-span-2">
-            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Utilidad (Flete - Gastos)</p>
-            <p class="text-sm font-bold" :class="utilidad >= 0 ? 'text-emerald-600' : 'text-red-600'">
-              {{ formatMoneda(utilidad) }}
-            </p>
           </div>
 
           <!-- Gastos -->
@@ -111,6 +103,13 @@ onMounted(async () => {
             >
               Ver Gastos →
             </button>
+          </div>
+
+          <div class="bg-slate-50 rounded-lg p-4 col-span-2">
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Utilidad (Flete - Gastos)</p>
+            <p class="text-sm font-bold" :class="utilidad >= 0 ? 'text-emerald-600' : 'text-red-600'">
+              {{ formatMoneda(utilidad) }}
+            </p>
           </div>
         </div>
         
