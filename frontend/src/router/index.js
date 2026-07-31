@@ -60,6 +60,12 @@ const router = createRouter({
           name: 'Gestión de Conductores',
           component: () => import('@/views/conductores/GestionarConductores.vue'),
         },
+        // Viajes
+        {
+          path: 'viajes',
+          name: 'Gestión de Viajes',
+          component: () => import('@/views/viajes/GestionarViajes.vue'),
+        },
         // Reportes
         {
           path: 'reportes',

@@ -30,7 +30,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from app.api.rutas import autenticacion, vehiculo, tipo_gasto, proveedor, gasto, reporte, usuario, conductor
+from app.api.rutas import autenticacion, vehiculo, tipo_gasto, proveedor, gasto, reporte, usuario, conductor, viaje
 
 app.include_router(autenticacion.enrutador, prefix="/api/v1")
 app.include_router(vehiculo.enrutador, prefix="/api/v1")
@@ -40,6 +40,7 @@ app.include_router(gasto.enrutador, prefix="/api/v1")
 app.include_router(reporte.enrutador, prefix="/api/v1")
 app.include_router(usuario.enrutador, prefix="/api/v1")
 app.include_router(conductor.enrutador, prefix="/api/v1")
+app.include_router(viaje.enrutador, prefix="/api/v1")
 
 @app.get("/")
 def inicio():

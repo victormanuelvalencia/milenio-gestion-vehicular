@@ -6,12 +6,13 @@ from decimal import Decimal
 class GastoBase(BaseModel):
     fecha: date
     valor: float
-    vehiculo_id: int
+    vehiculo_id: Optional[int] = None
     tipo_gasto_id: int
     proveedor_id: Optional[int] = None
     proveedor_manual: Optional[str] = None
     observaciones: Optional[str] = None
     verificado_dian: Optional[bool] = False
+    viaje_id: Optional[int] = None
 
 class GastoCrear(GastoBase):
     pass
@@ -25,6 +26,7 @@ class GastoActualizar(BaseModel):
     proveedor_manual: Optional[str] = None
     observaciones: Optional[str] = None
     verificado_dian: Optional[bool] = None
+    viaje_id: Optional[int] = None
 
 from app.esquemas.vehiculo import VehiculoRespuesta
 from app.esquemas.tipo_gasto import TipoGastoRespuesta

@@ -21,6 +21,7 @@ const cerrarMenuPerfil = () => {
 const menuPrincipal = [
   { name: 'Vehículos', to: '/vehiculos' },
   { name: 'Conductores', to: '/conductores' },
+  { name: 'Viajes', to: '/viajes' },
   { name: 'Gastos', to: '/gastos' },
   { name: 'Tipos de gasto', to: '/tipos-gasto' },
   { name: 'Proveedores', to: '/proveedores' }

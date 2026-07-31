@@ -8,6 +8,7 @@ from app.modelos.gasto import Gasto
 from app.modelos.tipo_gasto import TipoGasto
 from app.modelos.proveedor import Proveedor
 from app.modelos.conductor import Conductor
+from app.modelos.viaje import Viaje
 
 from app.base_datos.conexion import SesionLocal
 from app.modelos.usuario import Usuario, RolUsuario

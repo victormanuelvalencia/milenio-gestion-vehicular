@@ -4,14 +4,17 @@
   Props:
     - modo: 'crear' | 'editar' | 'detalle'
     - gastoInicial: Object (opcional) — datos a precargar en modo editar/detalle
+    - enModal: Boolean — si se muestra dentro de un modal
+    - viajeIdInicial: Number (opcional) — preselecciona un viaje al abrir desde la tabla de Viajes
 
   Emits:
     - guardado — cuando el formulario se envía exitosamente
+    - cancelado — cuando el usuario cancela
 -->
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { gastosService, vehiculosService, tiposGastoService, proveedoresService } from '@/services/modules'
+import { gastosService, tiposGastoService, proveedoresService, viajesService } from '@/services/modules'
 
 const props = defineProps({
   modo: {
@@ -26,6 +29,10 @@ const props = defineProps({
   enModal: {
     type: Boolean,
     default: false
+  },
+  viajeIdInicial: {
+    type: Number,
+    default: null
   }
 })
 
@@ -35,27 +42,37 @@ const router = useRouter()
 const cargando = ref(false)
 const error = ref('')
 const mensajeExito = ref('')
-const vehiculosActivos = ref([])
 const tiposGasto = ref([])
 const proveedores = ref([])
+const viajes = ref([])
 const usarProveedorRegistrado = ref(false)
 
 const formulario = ref({
   fecha: new Date().toISOString().slice(0, 10),
   valor: '',
-  vehiculo_id: '',
+  viaje_id: null,
   tipo_gasto_id: '',
   proveedor_id: null,
   proveedor_manual: '',
   observaciones: '',
 })
 
+// El viaje seleccionado actualmente
+const viajeSeleccionado = computed(() =>
+  viajes.value.find(v => v.id === formulario.value.viaje_id) || null
+)
+
 // Helpers para mostrar en modo detalle
-const getNombreVehiculo = (id) => vehiculosActivos.value.find(v => v.id === id)?.placa || `ID: ${id}`
 const getNombreTipo = (id) => tiposGasto.value.find(t => t.id === id)?.nombre || `ID: ${id}`
 const getNombreProveedor = (id) => {
   if (!id) return '—'
   return proveedores.value.find(p => p.id === id)?.nombre || `ID: ${id}`
+}
+const getViajeInfo = (id) => {
+  if (!id) return '—'
+  const v = viajes.value.find(v => v.id === id)
+  if (!v) return `ID: ${id}`
+  return `${v.numero_manifiesto} — ${v.origen} → ${v.destino}`
 }
 
 const formatValor = (val) =>
@@ -63,14 +80,14 @@ const formatValor = (val) =>
 
 const cargarDependencias = async () => {
   try {
-    const [rVeh, rTipos, rProv] = await Promise.all([
-      vehiculosService.obtenerTodos(),
+    const [rTipos, rProv, rViajes] = await Promise.all([
       tiposGastoService.obtenerTodos(),
       proveedoresService.obtenerTodos(),
+      viajesService.obtenerTodos()
     ])
-    vehiculosActivos.value = rVeh.data.filter(v => v.estado)
     tiposGasto.value = rTipos.data
     proveedores.value = rProv.data
+    viajes.value = rViajes.data
   } catch {
     error.value = 'Error al cargar datos de apoyo.'
   }
@@ -80,8 +97,20 @@ const inicializarFormulario = () => {
   if (props.gastoInicial) {
     formulario.value = { ...props.gastoInicial }
     usarProveedorRegistrado.value = !!props.gastoInicial.proveedor_id
+  } else if (props.viajeIdInicial) {
+    formulario.value.viaje_id = props.viajeIdInicial
   }
 }
+
+const formularioVacio = () => ({
+  fecha: new Date().toISOString().slice(0, 10),
+  valor: '',
+  viaje_id: props.viajeIdInicial || null,
+  tipo_gasto_id: '',
+  proveedor_id: null,
+  proveedor_manual: '',
+  observaciones: '',
+})
 
 const handleSubmit = async () => {
   if (props.modo === 'detalle') return
@@ -90,6 +119,8 @@ const handleSubmit = async () => {
   cargando.value = true
 
   const datos = { ...formulario.value }
+
+  // Limpiar campo de proveedor no usado
   if (!usarProveedorRegistrado.value) {
     datos.proveedor_id = null
   } else {
@@ -100,7 +131,8 @@ const handleSubmit = async () => {
     if (props.modo === 'crear') {
       await gastosService.crear(datos)
       mensajeExito.value = 'Gasto registrado exitosamente.'
-      formulario.value = { fecha: new Date().toISOString().slice(0, 10), valor: '', vehiculo_id: '', tipo_gasto_id: '', proveedor_id: null, proveedor_manual: '', observaciones: '' }
+      formulario.value = formularioVacio()
+      usarProveedorRegistrado.value = false
     } else if (props.modo === 'editar') {
       await gastosService.actualizar(props.gastoInicial.id, datos)
       mensajeExito.value = 'Gasto actualizado correctamente.'
@@ -125,6 +157,11 @@ onMounted(async () => {
 })
 
 watch(() => props.gastoInicial, inicializarFormulario)
+watch(() => props.viajeIdInicial, (nuevoId) => {
+  if (nuevoId && props.modo === 'crear') {
+    formulario.value.viaje_id = nuevoId
+  }
+})
 </script>
 
 <template>
@@ -151,13 +188,22 @@ watch(() => props.gastoInicial, inicializarFormulario)
         {{ error }}
       </div>
 
-      <!-- MODO DETALLE: Vista de solo lectura con tarjetas de datos -->
+      <!-- MODO DETALLE: Vista de solo lectura -->
       <div v-if="esReadOnly && gastoInicial" class="space-y-4">
         <div class="grid grid-cols-2 gap-4">
-          <div class="bg-slate-50 rounded-lg p-4">
-            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Vehículo</p>
-            <p class="text-sm font-bold text-gray-800">{{ getNombreVehiculo(gastoInicial.vehiculo_id) }}</p>
+          <!-- Viaje / Manifiesto -->
+          <div class="bg-blue-50 border border-blue-100 rounded-lg p-4 col-span-2">
+            <p class="text-xs font-semibold text-blue-400 uppercase tracking-wide mb-1">Viaje (Manifiesto)</p>
+            <p class="text-sm font-bold text-blue-800">{{ getViajeInfo(gastoInicial.viaje_id) }}</p>
+            <p v-if="gastoInicial.vehiculo_id || gastoInicial.vehiculo" class="text-xs text-blue-600 mt-1">
+              Vehículo:
+              <span class="font-semibold">
+                {{ gastoInicial.vehiculo?.placa || `ID ${gastoInicial.vehiculo_id}` }}
+                <span v-if="gastoInicial.vehiculo?.marca"> — {{ gastoInicial.vehiculo.marca }}</span>
+              </span>
+            </p>
           </div>
+
           <div class="bg-slate-50 rounded-lg p-4">
             <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Tipo de Gasto</p>
             <p class="text-sm font-bold text-gray-800">{{ getNombreTipo(gastoInicial.tipo_gasto_id) }}</p>
@@ -170,7 +216,7 @@ watch(() => props.gastoInicial, inicializarFormulario)
             <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Valor</p>
             <p class="text-sm font-bold text-blue-700">{{ formatValor(gastoInicial.valor) }}</p>
           </div>
-          <div class="bg-slate-50 rounded-lg p-4 col-span-2">
+          <div class="bg-slate-50 rounded-lg p-4">
             <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Proveedor</p>
             <p class="text-sm font-bold text-gray-800">
               {{ gastoInicial.proveedor_manual || getNombreProveedor(gastoInicial.proveedor_id) }}
@@ -193,15 +239,41 @@ watch(() => props.gastoInicial, inicializarFormulario)
 
       <!-- MODO CREAR / EDITAR: Formulario interactivo -->
       <form v-else @submit.prevent="handleSubmit" class="space-y-5">
+
+        <!-- Selector de Manifiesto (campo principal) -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">
+            Número de Manifiesto (Viaje) *
+          </label>
+          <select
+            v-model="formulario.viaje_id"
+            required
+            :disabled="esReadOnly"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
+          >
+            <option :value="null" disabled>Seleccionar manifiesto...</option>
+            <option v-for="v in viajes" :key="v.id" :value="v.id">
+              {{ v.numero_manifiesto }} — {{ v.origen }} → {{ v.destino }}
+            </option>
+          </select>
+          <p v-if="viajes.length === 0 && !esReadOnly" class="text-xs text-orange-500 mt-1">
+            No hay viajes registrados.
+          </p>
+        </div>
+
+        <!-- Vehículo derivado automáticamente (solo lectura informativa) -->
+        <div v-if="viajeSeleccionado" class="flex items-center gap-3 px-4 py-2.5 bg-blue-50 border border-blue-100 rounded-lg">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p class="text-sm text-blue-700">
+            Vehículo asociado:
+            <span class="font-bold">{{ viajeSeleccionado.vehiculo?.placa || '—' }}</span>
+            <span v-if="viajeSeleccionado.vehiculo?.marca" class="text-blue-500"> — {{ viajeSeleccionado.vehiculo.marca }}</span>
+          </p>
+        </div>
+
         <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-1">Vehículo *</label>
-            <select v-model="formulario.vehiculo_id" required :disabled="esReadOnly" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-500">
-              <option value="" disabled>Seleccionar vehículo...</option>
-              <option v-for="v in vehiculosActivos" :key="v.id" :value="v.id">{{ v.placa }} - {{ v.marca }}</option>
-            </select>
-            <p v-if="vehiculosActivos.length === 0 && !esReadOnly" class="text-xs text-orange-500 mt-1">No hay vehículos activos disponibles.</p>
-          </div>
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-1">Tipo de Gasto *</label>
             <select v-model="formulario.tipo_gasto_id" required :disabled="esReadOnly" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-500">
@@ -209,17 +281,17 @@ watch(() => props.gastoInicial, inicializarFormulario)
               <option v-for="t in tiposGasto" :key="t.id" :value="t.id">{{ t.nombre }}</option>
             </select>
           </div>
-        </div>
-        <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-1">Fecha *</label>
             <input type="date" v-model="formulario.fecha" required :readonly="esReadOnly" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 read-only:bg-gray-50 read-only:text-gray-500" />
           </div>
-          <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-1">Valor (COP) *</label>
-            <input type="number" v-model.number="formulario.valor" required min="0" :readonly="esReadOnly" placeholder="ej. 150000" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 read-only:bg-gray-50 read-only:text-gray-500" />
-          </div>
         </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Valor (COP) *</label>
+          <input type="number" v-model.number="formulario.valor" required min="0" :readonly="esReadOnly" placeholder="ej. 150000" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 read-only:bg-gray-50 read-only:text-gray-500" />
+        </div>
+
         <div>
           <label class="block text-sm font-semibold text-gray-700 mb-2">Proveedor</label>
           <div v-if="!esReadOnly" class="flex gap-4 mb-3">
@@ -238,14 +310,16 @@ watch(() => props.gastoInicial, inicializarFormulario)
             <option v-for="p in proveedores" :key="p.id" :value="p.id">{{ p.nombre }} — {{ p.nit }}</option>
           </select>
         </div>
+
         <div>
           <label class="block text-sm font-semibold text-gray-700 mb-1">Observaciones</label>
           <textarea v-model="formulario.observaciones" rows="3" :readonly="esReadOnly" placeholder="Detalles adicionales..." class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none read-only:bg-gray-50 read-only:text-gray-500"></textarea>
         </div>
+
         <div v-if="!esReadOnly" class="flex gap-3 pt-2">
           <button
             type="submit"
-            :disabled="cargando || vehiculosActivos.length === 0"
+            :disabled="cargando || !formulario.viaje_id"
             class="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold rounded-lg text-sm shadow-md transition-colors"
           >
             {{ cargando ? 'Guardando...' : (modo === 'editar' ? 'Actualizar Gasto' : 'Registrar Gasto') }}
