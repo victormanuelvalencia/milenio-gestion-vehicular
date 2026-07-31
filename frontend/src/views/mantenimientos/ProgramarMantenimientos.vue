@@ -130,8 +130,13 @@ const cerrarModalHecho = () => {
 
 const onMantenimientoRealizado = async () => {
   try {
-    // Si se guardó el real, eliminamos el programado
-    await mantenimientosProgramadosService.eliminar(mantenimientoEnProceso.value.id)
+    const id = mantenimientoEnProceso.value.id
+    // Eliminamos el programado
+    await mantenimientosProgramadosService.eliminar(id)
+    // Limpiar la marca de "leída" de localStorage para este ID
+    const leidas = new Set(JSON.parse(localStorage.getItem('noti_leidas') || '[]'))
+    leidas.delete(id)
+    localStorage.setItem('noti_leidas', JSON.stringify([...leidas]))
     mensajeExito.value = 'Mantenimiento registrado y eliminado de la programación.'
     cerrarModalHecho()
     await cargarDatos()
