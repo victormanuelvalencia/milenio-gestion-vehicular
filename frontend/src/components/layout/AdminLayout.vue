@@ -23,6 +23,7 @@ const menuPrincipal = [
   { name: 'Conductores', to: '/conductores' },
   { name: 'Viajes', to: '/viajes' },
   { name: 'Mantenimientos', to: '/mantenimientos' },
+  { name: 'Programar mantenimientos', to: '/mantenimientos-programados' },
   { name: 'Gastos', to: '/gastos' },
   { name: 'Tipos de gasto', to: '/tipos-gasto' },
   { name: 'Proveedores', to: '/proveedores' }

@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { mantenimientosService, vehiculosService, proveedoresService } from '@/services/modules'
+import FormularioMantenimiento from '@/components/mantenimientos/FormularioMantenimiento.vue'
 
 const mantenimientos = ref([])
 const vehiculos = ref([])
@@ -14,18 +15,6 @@ const formularioEdicion = ref({})
 
 // Creación
 const mostrarModalCrear = ref(false)
-const creando = ref(false)
-const errorCrear = ref('')
-const usarProveedorRegistrado = ref(false)
-
-const formularioCreacion = ref({
-  fecha: new Date().toISOString().slice(0, 10),
-  kilometraje: '',
-  vehiculo_id: '',
-  proveedor_id: null,
-  proveedor_manual: '',
-  valor: ''
-})
 
 const cargarDatos = async () => {
   cargando.value = true
@@ -60,16 +49,6 @@ const getNombreProveedor = (id) => {
 }
 
 const abrirModalCrear = () => {
-  errorCrear.value = ''
-  formularioCreacion.value = {
-    fecha: new Date().toISOString().slice(0, 10),
-    kilometraje: '',
-    vehiculo_id: '',
-    proveedor_id: null,
-    proveedor_manual: '',
-    valor: ''
-  }
-  usarProveedorRegistrado.value = false
   mostrarModalCrear.value = true
 }
 
@@ -77,27 +56,10 @@ const cerrarModalCrear = () => {
   mostrarModalCrear.value = false
 }
 
-const crearMantenimiento = async () => {
-  errorCrear.value = ''
-  creando.value = true
-  
-  const datos = { ...formularioCreacion.value }
-  if (!usarProveedorRegistrado.value) {
-    datos.proveedor_id = null
-  } else {
-    datos.proveedor_manual = ''
-  }
-
-  try {
-    await mantenimientosService.crear(datos)
-    mensajeExito.value = '¡Mantenimiento registrado exitosamente!'
-    cerrarModalCrear()
-    await cargarDatos()
-  } catch (e) {
-    errorCrear.value = e.response?.data?.detail || 'Error al registrar el mantenimiento.'
-  } finally {
-    creando.value = false
-  }
+const onMantenimientoGuardado = async () => {
+  mensajeExito.value = '¡Mantenimiento registrado exitosamente!'
+  cerrarModalCrear()
+  await cargarDatos()
 }
 
 const editarUsarProveedorRegistrado = ref(false)
@@ -289,62 +251,7 @@ onMounted(cargarDatos)
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
           </button>
         </div>
-        <form @submit.prevent="crearMantenimiento" class="p-6">
-          <div v-if="errorCrear" class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
-            {{ errorCrear }}
-          </div>
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Vehículo *</label>
-              <select v-model="formularioCreacion.vehiculo_id" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
-                <option value="" disabled>Seleccione...</option>
-                <option v-for="v in vehiculos" :key="v.id" :value="v.id">{{ v.placa }} - {{ v.marca }}</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Fecha *</label>
-              <input type="date" v-model="formularioCreacion.fecha" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Kilometraje *</label>
-              <input v-model.number="formularioCreacion.kilometraje" type="number" required min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Valor (COP) *</label>
-              <input v-model.number="formularioCreacion.valor" type="number" required min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" />
-            </div>
-
-            <div class="col-span-1 md:col-span-2">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Proveedor</label>
-              <div class="flex gap-4 mb-3">
-                <label class="flex items-center gap-2 cursor-pointer">
-                  <input type="radio" :value="false" v-model="usarProveedorRegistrado" />
-                  <span class="text-sm text-gray-700">Proveedor manual</span>
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer">
-                  <input type="radio" :value="true" v-model="usarProveedorRegistrado" />
-                  <span class="text-sm text-gray-700">Proveedor registrado</span>
-                </label>
-              </div>
-              <input v-if="!usarProveedorRegistrado" v-model="formularioCreacion.proveedor_manual" placeholder="ej. Taller Central" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-              <select v-else v-model="formularioCreacion.proveedor_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option :value="null">Sin proveedor</option>
-                <option v-for="p in proveedores" :key="p.id" :value="p.id">{{ p.nombre }} — {{ p.nit }}</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="pt-4 flex justify-end gap-3 border-t border-gray-100 mt-6">
-            <button type="button" @click="cerrarModalCrear" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Cancelar</button>
-            <button type="submit" :disabled="creando" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50">
-              {{ creando ? 'Guardando...' : 'Guardar Mantenimiento' }}
-            </button>
-          </div>
-        </form>
+        <FormularioMantenimiento @guardado="onMantenimientoGuardado" @cancelado="cerrarModalCrear" />
       </div>
     </div>
   </div>

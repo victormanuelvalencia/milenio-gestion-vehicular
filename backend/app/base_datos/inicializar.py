@@ -10,6 +10,7 @@ from app.modelos.proveedor import Proveedor
 from app.modelos.conductor import Conductor
 from app.modelos.viaje import Viaje
 from app.modelos.mantenimiento import Mantenimiento
+from app.modelos.mantenimiento_programado import MantenimientoProgramado
 
 from app.base_datos.conexion import SesionLocal
 from app.modelos.usuario import Usuario, RolUsuario

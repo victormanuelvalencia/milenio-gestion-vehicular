@@ -72,6 +72,12 @@ const router = createRouter({
           name: 'Gestión de Mantenimientos',
           component: () => import('@/views/mantenimientos/GestionarMantenimientos.vue'),
         },
+        // Programar Mantenimientos
+        {
+          path: 'mantenimientos-programados',
+          name: 'Programar Mantenimientos',
+          component: () => import('@/views/mantenimientos/ProgramarMantenimientos.vue'),
+        },
         // Reportes
         {
           path: 'reportes',
