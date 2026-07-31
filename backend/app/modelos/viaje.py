@@ -1,6 +1,7 @@
-from typing import List
+from datetime import date
+from typing import List, Optional
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, Numeric, ForeignKey
+from sqlalchemy import String, Numeric, ForeignKey, Date
 from app.base_datos.base import Base
 
 
@@ -16,6 +17,7 @@ class Viaje(Base):
     numero_manifiesto: Mapped[str] = mapped_column(String(100), unique=True, index=True)
     flete: Mapped[float] = mapped_column(Numeric(12, 2))
     anticipo: Mapped[float] = mapped_column(Numeric(12, 2), default=0)
+    fecha: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
 
     # Relaciones
     vehiculo: Mapped["Vehiculo"] = relationship(back_populates="viajes")

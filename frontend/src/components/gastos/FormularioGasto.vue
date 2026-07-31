@@ -6,6 +6,8 @@
     - gastoInicial: Object (opcional) — datos a precargar en modo editar/detalle
     - enModal: Boolean — si se muestra dentro de un modal
     - viajeIdInicial: Number (opcional) — preselecciona un viaje al abrir desde la tabla de Viajes
+    - numeroManifiestoInicial: String (opcional) — muestra el manifiesto como campo readonly
+    - fechaInicial: String (opcional) — establece la fecha como readonly (heredada del viaje)
 
   Emits:
     - guardado — cuando el formulario se envía exitosamente
@@ -33,6 +35,14 @@ const props = defineProps({
   viajeIdInicial: {
     type: Number,
     default: null
+  },
+  numeroManifiestoInicial: {
+    type: String,
+    default: null
+  },
+  fechaInicial: {
+    type: String,
+    default: null
   }
 })
 
@@ -47,8 +57,11 @@ const proveedores = ref([])
 const viajes = ref([])
 const usarProveedorRegistrado = ref(false)
 
+// Cuando viene desde un viaje, el manifiesto y fecha son readonly
+const desdeViaje = computed(() => !!props.numeroManifiestoInicial)
+
 const formulario = ref({
-  fecha: new Date().toISOString().slice(0, 10),
+  fecha: props.fechaInicial || new Date().toISOString().slice(0, 10),
   valor: '',
   viaje_id: null,
   tipo_gasto_id: '',
@@ -99,11 +112,14 @@ const inicializarFormulario = () => {
     usarProveedorRegistrado.value = !!props.gastoInicial.proveedor_id
   } else if (props.viajeIdInicial) {
     formulario.value.viaje_id = props.viajeIdInicial
+    if (props.fechaInicial) {
+      formulario.value.fecha = props.fechaInicial
+    }
   }
 }
 
 const formularioVacio = () => ({
-  fecha: new Date().toISOString().slice(0, 10),
+  fecha: props.fechaInicial || new Date().toISOString().slice(0, 10),
   valor: '',
   viaje_id: props.viajeIdInicial || null,
   tipo_gasto_id: '',
@@ -160,6 +176,11 @@ watch(() => props.gastoInicial, inicializarFormulario)
 watch(() => props.viajeIdInicial, (nuevoId) => {
   if (nuevoId && props.modo === 'crear') {
     formulario.value.viaje_id = nuevoId
+  }
+})
+watch(() => props.fechaInicial, (nuevaFecha) => {
+  if (nuevaFecha && props.modo === 'crear') {
+    formulario.value.fecha = nuevaFecha
   }
 })
 </script>
@@ -240,8 +261,31 @@ watch(() => props.viajeIdInicial, (nuevoId) => {
       <!-- MODO CREAR / EDITAR: Formulario interactivo -->
       <form v-else @submit.prevent="handleSubmit" class="space-y-5">
 
-        <!-- Selector de Manifiesto (campo principal) -->
-        <div>
+        <!-- Si viene desde un viaje: mostrar manifiesto y fecha como readonly -->
+        <div v-if="desdeViaje" class="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-3">
+          <p class="text-xs font-semibold text-blue-500 uppercase tracking-wide">Datos del Viaje (solo lectura)</p>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-gray-500 mb-1">Número de Manifiesto</label>
+              <input
+                :value="numeroManifiestoInicial"
+                readonly
+                class="w-full px-3 py-2 border border-blue-200 rounded-lg text-sm bg-white text-blue-800 font-bold cursor-not-allowed"
+              />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-500 mb-1">Fecha del Viaje</label>
+              <input
+                :value="fechaInicial || '—'"
+                readonly
+                class="w-full px-3 py-2 border border-blue-200 rounded-lg text-sm bg-white text-blue-800 font-bold cursor-not-allowed"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Selector de Manifiesto (solo si NO viene desde un viaje) -->
+        <div v-else>
           <label class="block text-sm font-semibold text-gray-700 mb-1">
             Número de Manifiesto (Viaje) *
           </label>
@@ -262,7 +306,7 @@ watch(() => props.viajeIdInicial, (nuevoId) => {
         </div>
 
         <!-- Vehículo derivado automáticamente (solo lectura informativa) -->
-        <div v-if="viajeSeleccionado" class="flex items-center gap-3 px-4 py-2.5 bg-blue-50 border border-blue-100 rounded-lg">
+        <div v-if="viajeSeleccionado && !desdeViaje" class="flex items-center gap-3 px-4 py-2.5 bg-blue-50 border border-blue-100 rounded-lg">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
@@ -281,7 +325,8 @@ watch(() => props.viajeIdInicial, (nuevoId) => {
               <option v-for="t in tiposGasto" :key="t.id" :value="t.id">{{ t.nombre }}</option>
             </select>
           </div>
-          <div>
+          <!-- Fecha: solo visible si NO viene de un viaje -->
+          <div v-if="!desdeViaje">
             <label class="block text-sm font-semibold text-gray-700 mb-1">Fecha *</label>
             <input type="date" v-model="formulario.fecha" required :readonly="esReadOnly" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 read-only:bg-gray-50 read-only:text-gray-500" />
           </div>
@@ -319,7 +364,7 @@ watch(() => props.viajeIdInicial, (nuevoId) => {
         <div v-if="!esReadOnly" class="flex gap-3 pt-2">
           <button
             type="submit"
-            :disabled="cargando || !formulario.viaje_id"
+            :disabled="cargando || (!formulario.viaje_id && !desdeViaje)"
             class="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold rounded-lg text-sm shadow-md transition-colors"
           >
             {{ cargando ? 'Guardando...' : (modo === 'editar' ? 'Actualizar Gasto' : 'Registrar Gasto') }}

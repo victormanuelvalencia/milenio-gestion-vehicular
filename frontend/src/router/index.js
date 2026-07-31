@@ -66,6 +66,16 @@ const router = createRouter({
           name: 'Gestión de Viajes',
           component: () => import('@/views/viajes/GestionarViajes.vue'),
         },
+        {
+          path: 'viajes/:id/detalle',
+          name: 'Detalle del Viaje',
+          component: () => import('@/views/viajes/DetalleViaje.vue'),
+        },
+        {
+          path: 'viajes/:id/gastos',
+          name: 'Gastos del Viaje',
+          component: () => import('@/views/viajes/GastosViaje.vue'),
+        },
         // Mantenimientos
         {
           path: 'mantenimientos',

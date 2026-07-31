@@ -1,5 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 from typing import Optional, List
+from datetime import date
 
 
 class ViajeBase(BaseModel):
@@ -11,6 +12,7 @@ class ViajeBase(BaseModel):
     numero_manifiesto: str
     flete: float
     anticipo: float = 0.0
+    fecha: Optional[date] = None
 
 
 class ViajeCrear(ViajeBase):
@@ -26,6 +28,7 @@ class ViajeActualizar(BaseModel):
     numero_manifiesto: Optional[str] = None
     flete: Optional[float] = None
     anticipo: Optional[float] = None
+    fecha: Optional[date] = None
 
 
 from app.esquemas.vehiculo import VehiculoRespuesta

@@ -45,6 +45,7 @@ export const conductoresService = {
 export const viajesService = {
   obtenerTodos: () => api.get('/viajes'),
   obtenerPorId: (id) => api.get(`/viajes/${id}`),
+  obtenerGastos: (id) => api.get(`/viajes/${id}/gastos`),
   crear: (datos) => api.post('/viajes', datos),
   actualizar: (id, datos) => api.put(`/viajes/${id}`, datos),
   eliminar: (id) => api.delete(`/viajes/${id}`),

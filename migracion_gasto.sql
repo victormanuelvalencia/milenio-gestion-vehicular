@@ -1,1 +1,0 @@
-ALTER TABLE gastos ADD COLUMN verificado_dian BOOLEAN DEFAULT FALSE;

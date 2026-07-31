@@ -21,6 +21,20 @@ def _resolver_vehiculo_desde_viaje(bd: Session, datos: dict) -> dict:
     return datos
 
 
+def _forzar_fecha_desde_viaje(bd: Session, datos: dict) -> dict:
+    """
+    Si se proporciona viaje_id y el viaje tiene fecha registrada,
+    la fecha del gasto se fuerza a coincidir con la del viaje.
+    Esto garantiza que todos los gastos de un viaje tengan la misma fecha.
+    """
+    viaje_id = datos.get("viaje_id")
+    if viaje_id:
+        viaje = bd.query(Viaje).filter(Viaje.id == viaje_id).first()
+        if viaje and viaje.fecha:
+            datos["fecha"] = viaje.fecha
+    return datos
+
+
 def obtener_todos(bd: Session, skip: int = 0, limit: int = 10):
     return bd.query(Gasto).offset(skip).limit(limit).all()
 
@@ -32,9 +46,14 @@ def obtener_por_id(bd: Session, id_gasto: int):
     return gasto
 
 
+def obtener_por_viaje(bd: Session, id_viaje: int):
+    return bd.query(Gasto).filter(Gasto.viaje_id == id_viaje).all()
+
+
 def crear(bd: Session, gasto_crear: GastoCrear):
     datos = gasto_crear.model_dump()
     datos = _resolver_vehiculo_desde_viaje(bd, datos)
+    datos = _forzar_fecha_desde_viaje(bd, datos)
 
     if not datos.get("vehiculo_id"):
         raise HTTPException(
@@ -56,6 +75,12 @@ def actualizar(bd: Session, id_gasto: int, gasto_actualizar: GastoActualizar):
     # Si cambia el viaje y no se especifica vehiculo_id, re-derivar
     if "viaje_id" in datos_actualizar and "vehiculo_id" not in datos_actualizar:
         datos_actualizar = _resolver_vehiculo_desde_viaje(bd, datos_actualizar)
+
+    # Forzar fecha del viaje (actual o nuevo) si hay viaje_id
+    viaje_id = datos_actualizar.get("viaje_id", db_gasto.viaje_id)
+    if viaje_id:
+        datos_actualizar["viaje_id"] = viaje_id
+        datos_actualizar = _forzar_fecha_desde_viaje(bd, datos_actualizar)
 
     for clave, valor in datos_actualizar.items():
         setattr(db_gasto, clave, valor)
