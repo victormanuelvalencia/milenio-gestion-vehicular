@@ -88,6 +88,15 @@ const eliminarGasto = async (g) => {
   }
 }
 
+const actualizarVerificacion = async (g) => {
+  try {
+    await gastosService.actualizar(g.id, { verificado_dian: g.verificado_dian })
+  } catch (err) {
+    error.value = 'Error al actualizar el estado de verificación.'
+    g.verificado_dian = !g.verificado_dian // revertir en caso de error
+  }
+}
+
 onMounted(cargarDatos)
 </script>
 
@@ -123,8 +132,9 @@ onMounted(cargarDatos)
             <th class="px-4 py-3 w-[10%]">Gasto</th>
             <th class="px-4 py-3 w-[15%]">Proveedor</th>
             <th class="px-4 py-3 w-[10%]">Valor</th>
-            <th class="px-4 py-3 w-[20%]">Observaciones</th>
-            <th class="px-4 py-3 w-[20%]">Acciones</th>
+            <th class="px-4 py-3 w-[15%]">Observaciones</th>
+            <th class="px-4 py-3 w-[8%]">Verificado</th>
+            <th class="px-4 py-3 w-[17%]">Acciones</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100">
@@ -138,6 +148,9 @@ onMounted(cargarDatos)
             <td class="px-4 py-3 text-gray-600">{{ g.proveedor_manual || getNombreProveedor(g.proveedor_id) }}</td>
             <td class="px-4 py-3 font-semibold text-gray-800">{{ formatValor(g.valor) }}</td>
             <td class="px-4 py-3 text-gray-500 max-w-xs truncate">{{ g.observaciones || '—' }}</td>
+            <td class="px-4 py-3 text-center">
+              <input type="checkbox" v-model="g.verificado_dian" @change="actualizarVerificacion(g)" class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer" title="Verificado con DIAN" />
+            </td>
             <td class="px-4 py-3">
               <div class="flex items-center justify-center gap-3">
                 <button

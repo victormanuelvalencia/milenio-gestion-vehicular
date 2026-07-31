@@ -19,6 +19,7 @@ class Gasto(Base):
     # Campos adicionales
     proveedor_manual: Mapped[Optional[str]] = mapped_column(String(150), nullable=True)
     observaciones: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    verificado_dian: Mapped[bool] = mapped_column(default=False)
 
     # Relaciones
     vehiculo: Mapped["Vehiculo"] = relationship(back_populates="gastos")

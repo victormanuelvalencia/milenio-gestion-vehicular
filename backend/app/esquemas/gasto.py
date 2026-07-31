@@ -11,6 +11,7 @@ class GastoBase(BaseModel):
     proveedor_id: Optional[int] = None
     proveedor_manual: Optional[str] = None
     observaciones: Optional[str] = None
+    verificado_dian: Optional[bool] = False
 
 class GastoCrear(GastoBase):
     pass
@@ -23,6 +24,7 @@ class GastoActualizar(BaseModel):
     proveedor_id: Optional[int] = None
     proveedor_manual: Optional[str] = None
     observaciones: Optional[str] = None
+    verificado_dian: Optional[bool] = None
 
 from app.esquemas.vehiculo import VehiculoRespuesta
 from app.esquemas.tipo_gasto import TipoGastoRespuesta
