@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { viajesService, vehiculosService, conductoresService } from '@/services/modules'
 import FormularioGasto from '@/components/gastos/FormularioGasto.vue'
+import SearchableSelect from '@/components/common/SearchableSelect.vue'
 
 const router = useRouter()
 const viajes = ref([])
@@ -216,12 +217,12 @@ onMounted(cargarDatos)
         <table class="w-full text-sm text-center">
           <thead class="bg-slate-800 text-white text-xs uppercase tracking-wide">
             <tr>
-              <th class="px-3 py-3 w-[18%]">Manifiesto</th>
-              <th class="px-3 py-3 w-[12%]">Placa</th>
+              <th class="px-3 py-3 w-[20%]">Manifiesto</th>
+              <th class="px-3 py-3 w-[15%]">Placa</th>
               <th class="px-3 py-3 w-[15%]">Flete</th>
               <th class="px-3 py-3 w-[15%]">Anticipo</th>
               <th class="px-3 py-3 w-[15%]">Utilidad</th>
-              <th class="px-3 py-3 w-[25%]">Acciones</th>
+              <th class="px-3 py-3 w-[20%]">Acciones</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100">
@@ -276,9 +277,10 @@ onMounted(cargarDatos)
             >
               <td class="px-2 py-2"><input v-model="formularioEdicion.numero_manifiesto" class="w-full px-1 py-1 text-xs border rounded" /></td>
               <td class="px-2 py-2">
-                <select v-model="formularioEdicion.vehiculo_id" class="w-full px-1 py-1 text-xs border rounded">
-                  <option v-for="veh in vehiculos" :key="veh.id" :value="veh.id">{{ veh.placa }}</option>
-                </select>
+                <SearchableSelect
+                  v-model="formularioEdicion.vehiculo_id"
+                  :options="vehiculos.map(v => ({ value: v.id, label: v.placa }))"
+                />
               </td>
               <td class="px-2 py-2"><input v-model.number="formularioEdicion.flete" type="number" class="w-full px-1 py-1 text-xs border rounded" /></td>
               <td class="px-2 py-2"><input v-model.number="formularioEdicion.anticipo" type="number" class="w-full px-1 py-1 text-xs border rounded" /></td>
@@ -342,18 +344,22 @@ onMounted(cargarDatos)
 
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Vehículo *</label>
-              <select v-model="formularioCreacion.vehiculo_id" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
-                <option value="" disabled>Seleccione...</option>
-                <option v-for="v in vehiculos" :key="v.id" :value="v.id">{{ v.placa }}</option>
-              </select>
+              <SearchableSelect
+                v-model="formularioCreacion.vehiculo_id"
+                :options="vehiculos.map(v => ({ value: v.id, label: v.placa }))"
+                placeholder="Seleccione..."
+                required
+              />
             </div>
 
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Conductor *</label>
-              <select v-model="formularioCreacion.conductor_id" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
-                <option value="" disabled>Seleccione...</option>
-                <option v-for="c in conductores" :key="c.id" :value="c.id">{{ c.nombre }} ({{ c.cedula }})</option>
-              </select>
+              <SearchableSelect
+                v-model="formularioCreacion.conductor_id"
+                :options="conductores.map(c => ({ value: c.id, label: `${c.nombre} (${c.cedula})` }))"
+                placeholder="Seleccione..."
+                required
+              />
             </div>
 
             <div>

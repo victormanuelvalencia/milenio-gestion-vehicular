@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { mantenimientosProgramadosService, vehiculosService } from '@/services/modules'
 import FormularioMantenimiento from '@/components/mantenimientos/FormularioMantenimiento.vue'
+import SearchableSelect from '@/components/common/SearchableSelect.vue'
 
 const mantenimientosProgramados = ref([])
 const vehiculos = ref([])
@@ -226,7 +227,7 @@ onMounted(cargarDatos)
             >
               <td class="px-3 py-3 font-medium text-gray-700">{{ formatFecha(m.fecha_programada) }}</td>
               <td class="px-3 py-3 font-bold text-gray-800">{{ m.vehiculo?.placa || '—' }}</td>
-              <td class="px-3 py-3 text-gray-600 text-left">{{ m.descripcion }}</td>
+              <td class="px-3 py-3 text-gray-600">{{ m.descripcion }}</td>
               <td class="px-3 py-3">
                 <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded-full">{{ m.estado }}</span>
               </td>
@@ -253,9 +254,10 @@ onMounted(cargarDatos)
             >
               <td class="px-2 py-2"><input type="date" v-model="formularioEdicion.fecha_programada" class="w-full px-1 py-1 text-xs border rounded" /></td>
               <td class="px-2 py-2">
-                <select v-model="formularioEdicion.vehiculo_id" class="w-full px-1 py-1 text-xs border rounded">
-                  <option v-for="veh in vehiculos" :key="veh.id" :value="veh.id">{{ veh.placa }}</option>
-                </select>
+                <SearchableSelect
+                  v-model="formularioEdicion.vehiculo_id"
+                  :options="vehiculos.map(v => ({ value: v.id, label: v.placa }))"
+                />
               </td>
               <td class="px-2 py-2"><input v-model="formularioEdicion.descripcion" class="w-full px-1 py-1 text-xs border rounded" /></td>
               <td class="px-2 py-2 text-gray-500 text-xs">{{ m.estado }}</td>
@@ -303,10 +305,12 @@ onMounted(cargarDatos)
           <div class="grid grid-cols-1 gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Vehículo *</label>
-              <select v-model="formularioCreacion.vehiculo_id" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
-                <option value="" disabled>Seleccione...</option>
-                <option v-for="v in vehiculos" :key="v.id" :value="v.id">{{ v.placa }}</option>
-              </select>
+              <SearchableSelect
+                v-model="formularioCreacion.vehiculo_id"
+                :options="vehiculos.map(v => ({ value: v.id, label: v.placa }))"
+                placeholder="Seleccione..."
+                required
+              />
             </div>
 
             <div>

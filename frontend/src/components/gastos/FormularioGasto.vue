@@ -17,6 +17,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { gastosService, tiposGastoService, proveedoresService, viajesService } from '@/services/modules'
+import SearchableSelect from '@/components/common/SearchableSelect.vue'
 
 const props = defineProps({
   modo: {
@@ -217,7 +218,6 @@ watch(() => props.fechaInicial, (nuevaFecha) => {
             <p class="text-xs font-semibold text-blue-400 uppercase tracking-wide mb-1">Viaje (Manifiesto)</p>
             <p class="text-sm font-bold text-blue-800">{{ getViajeInfo(gastoInicial.viaje_id) }}</p>
             <p v-if="gastoInicial.vehiculo_id || gastoInicial.vehiculo" class="text-xs text-blue-600 mt-1">
-              Vehículo:
               <span class="font-semibold">
                 {{ gastoInicial.vehiculo?.placa || `ID ${gastoInicial.vehiculo_id}` }}
               </span>
@@ -288,17 +288,13 @@ watch(() => props.fechaInicial, (nuevaFecha) => {
           <label class="block text-sm font-semibold text-gray-700 mb-1">
             Número de Manifiesto (Viaje) *
           </label>
-          <select
+          <SearchableSelect
             v-model="formulario.viaje_id"
-            required
+            :options="viajes.map(v => ({ value: v.id, label: `${v.numero_manifiesto} — ${v.origen} → ${v.destino}` }))"
+            placeholder="Seleccionar manifiesto..."
             :disabled="esReadOnly"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
-          >
-            <option :value="null" disabled>Seleccionar manifiesto...</option>
-            <option v-for="v in viajes" :key="v.id" :value="v.id">
-              {{ v.numero_manifiesto }} — {{ v.origen }} → {{ v.destino }}
-            </option>
-          </select>
+            required
+          />
           <p v-if="viajes.length === 0 && !esReadOnly" class="text-xs text-orange-500 mt-1">
             No hay viajes registrados.
           </p>
@@ -318,10 +314,13 @@ watch(() => props.fechaInicial, (nuevaFecha) => {
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-1">Tipo de Gasto *</label>
-            <select v-model="formulario.tipo_gasto_id" required :disabled="esReadOnly" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-500">
-              <option value="" disabled>Seleccionar tipo...</option>
-              <option v-for="t in tiposGasto" :key="t.id" :value="t.id">{{ t.nombre }}</option>
-            </select>
+            <SearchableSelect
+              v-model="formulario.tipo_gasto_id"
+              :options="tiposGasto.map(t => ({ value: t.id, label: t.nombre }))"
+              placeholder="Seleccionar tipo..."
+              :disabled="esReadOnly"
+              required
+            />
           </div>
           <!-- Fecha: solo visible si NO viene de un viaje -->
           <div v-if="!desdeViaje">
@@ -348,10 +347,13 @@ watch(() => props.fechaInicial, (nuevaFecha) => {
             </label>
           </div>
           <input v-if="!usarProveedorRegistrado" v-model="formulario.proveedor_manual" :readonly="esReadOnly" placeholder="ej. Taller El Mecanico" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 read-only:bg-gray-50 read-only:text-gray-500" />
-          <select v-else v-model="formulario.proveedor_id" :disabled="esReadOnly" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-500">
-            <option :value="null">Sin proveedor</option>
-            <option v-for="p in proveedores" :key="p.id" :value="p.id">{{ p.nombre }} — {{ p.nit }}</option>
-          </select>
+          <SearchableSelect
+            v-else
+            v-model="formulario.proveedor_id"
+            :options="[{value: null, label: 'Sin proveedor'}, ...proveedores.map(p => ({ value: p.id, label: `${p.nombre} — ${p.nit}` }))]"
+            placeholder="Seleccionar proveedor..."
+            :disabled="esReadOnly"
+          />
         </div>
 
         <div>

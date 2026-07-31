@@ -138,11 +138,11 @@ onMounted(cargarVehiculos)
       <table class="w-full text-sm text-center table-fixed">
         <thead class="bg-slate-800 text-white text-xs uppercase tracking-wide">
           <tr>
-            <th class="px-4 py-3 w-[15%]">Placa</th>
+            <th class="px-4 py-3 w-[20%]">Placa</th>
             <th class="px-4 py-3 w-[20%]">Marca</th>
-            <th class="px-4 py-3 w-[15%]">Año</th>
-            <th class="px-4 py-3 w-[15%]">Estado</th>
-            <th class="px-4 py-3 w-[25%]">Acciones</th>
+            <th class="px-4 py-3 w-[20%]">Año</th>
+            <th class="px-4 py-3 w-[20%]">Estado</th>
+            <th class="px-4 py-3 w-[20%]">Acciones</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100">

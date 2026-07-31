@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { mantenimientosService, vehiculosService, proveedoresService } from '@/services/modules'
+import SearchableSelect from '@/components/common/SearchableSelect.vue'
 
 const props = defineProps({
   vehiculoIdInicial: {
@@ -83,10 +84,12 @@ onMounted(cargarDatos)
     <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Vehículo *</label>
-        <select v-model="formulario.vehiculo_id" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
-          <option value="" disabled>Seleccione...</option>
-          <option v-for="v in vehiculos" :key="v.id" :value="v.id">{{ v.placa }}</option>
-        </select>
+        <SearchableSelect
+          v-model="formulario.vehiculo_id"
+          :options="vehiculos.map(v => ({ value: v.id, label: v.placa }))"
+          placeholder="Seleccione..."
+          required
+        />
       </div>
 
       <div>
@@ -122,10 +125,12 @@ onMounted(cargarDatos)
           </label>
         </div>
         <input v-if="!usarProveedorRegistrado" v-model="formulario.proveedor_manual" placeholder="ej. Taller Central" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        <select v-else v-model="formulario.proveedor_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <option :value="null">Sin proveedor</option>
-          <option v-for="p in proveedores" :key="p.id" :value="p.id">{{ p.nombre }} — {{ p.nit }}</option>
-        </select>
+        <SearchableSelect
+          v-else
+          v-model="formulario.proveedor_id"
+          :options="[{value: null, label: 'Sin proveedor'}, ...proveedores.map(p => ({ value: p.id, label: `${p.nombre} — ${p.nit}` }))]"
+          placeholder="Seleccionar proveedor..."
+        />
       </div>
     </div>
 

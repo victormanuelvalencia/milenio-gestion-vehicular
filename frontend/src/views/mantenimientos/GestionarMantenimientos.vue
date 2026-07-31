@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { mantenimientosService, vehiculosService, proveedoresService } from '@/services/modules'
 import FormularioMantenimiento from '@/components/mantenimientos/FormularioMantenimiento.vue'
+import SearchableSelect from '@/components/common/SearchableSelect.vue'
 
 const mantenimientos = ref([])
 const vehiculos = ref([])
@@ -220,9 +221,10 @@ onMounted(cargarDatos)
             >
               <td class="px-2 py-2"><input type="date" v-model="formularioEdicion.fecha" class="w-full px-1 py-1 text-xs border rounded" /></td>
               <td class="px-2 py-2">
-                <select v-model="formularioEdicion.vehiculo_id" class="w-full px-1 py-1 text-xs border rounded">
-                  <option v-for="veh in vehiculos" :key="veh.id" :value="veh.id">{{ veh.placa }}</option>
-                </select>
+                <SearchableSelect
+                  v-model="formularioEdicion.vehiculo_id"
+                  :options="vehiculos.map(v => ({ value: v.id, label: v.placa }))"
+                />
               </td>
               <td class="px-2 py-2"><input v-model.number="formularioEdicion.kilometraje" type="number" class="w-full px-1 py-1 text-xs border rounded" /></td>
               <td class="px-2 py-2"><input v-model="formularioEdicion.descripcion" placeholder="Descripción" class="w-full px-1 py-1 text-xs border rounded" /></td>
@@ -232,10 +234,11 @@ onMounted(cargarDatos)
                   <label class="text-[10px] flex items-center gap-1 cursor-pointer"><input type="radio" :value="true" v-model="editarUsarProveedorRegistrado" /> Registrado</label>
                 </div>
                 <input v-if="!editarUsarProveedorRegistrado" v-model="formularioEdicion.proveedor_manual" class="w-full px-1 py-1 text-xs border rounded" placeholder="Proveedor manual" />
-                <select v-else v-model="formularioEdicion.proveedor_id" class="w-full px-1 py-1 text-xs border rounded">
-                  <option :value="null">Ninguno</option>
-                  <option v-for="p in proveedores" :key="p.id" :value="p.id">{{ p.nombre }}</option>
-                </select>
+                <SearchableSelect
+                  v-else
+                  v-model="formularioEdicion.proveedor_id"
+                  :options="[{value: null, label: 'Ninguno'}, ...proveedores.map(p => ({ value: p.id, label: p.nombre }))]"
+                />
               </td>
               <td class="px-2 py-2"><input v-model.number="formularioEdicion.valor" type="number" class="w-full px-1 py-1 text-xs border rounded" /></td>
               <td class="px-2 py-2">

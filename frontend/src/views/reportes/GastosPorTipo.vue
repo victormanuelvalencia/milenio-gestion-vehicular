@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { vehiculosService, reportesService } from '@/services/modules'
+import SearchableSelect from '@/components/common/SearchableSelect.vue'
 import { exportarAExcel, exportarAPDF } from '@/utils/exportUtils'
 
 const vehiculos = ref([])
@@ -65,10 +66,10 @@ const exportarPDF = () => exportarAPDF(resultados.value, columnasExportacion, 'G
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Vehículo</label>
-          <select v-model="filtros.vehiculo_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
-            <option value="">Todos los vehículos</option>
-            <option v-for="v in vehiculos" :key="v.id" :value="v.id">{{ v.placa }}</option>
-          </select>
+          <SearchableSelect
+            v-model="filtros.vehiculo_id"
+            :options="[{value: '', label: 'Todos los vehículos'}, ...vehiculos.map(v => ({ value: v.id, label: v.placa }))]"
+          />
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Inicial</label>

@@ -159,9 +159,9 @@ onMounted(cargarConductores)
       <table class="w-full text-sm text-center table-fixed">
         <thead class="bg-slate-800 text-white text-xs uppercase tracking-wide">
           <tr>
-            <th class="px-4 py-3 w-[35%]">Nombre</th>
+            <th class="px-4 py-3 w-[30%]">Nombre</th>
             <th class="px-4 py-3 w-[25%]">Cédula</th>
-            <th class="px-4 py-3 w-[15%]">Estado</th>
+            <th class="px-4 py-3 w-[20%]">Estado</th>
             <th class="px-4 py-3 w-[25%]">Acciones</th>
           </tr>
         </thead>
