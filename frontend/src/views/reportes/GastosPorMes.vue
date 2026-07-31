@@ -89,7 +89,7 @@ const exportarPDF = () => exportarAPDF(resultados.value, columnasExportacion, `G
 
       <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
         <table class="w-full text-sm text-center table-fixed">
-          <thead class="bg-slate-800 text-white text-xs uppercase tracking-wide">
+          <thead class="bg-slate-800 text-white text-xs tracking-wide">
             <tr>
               <th class="px-4 py-3 w-[40%]">Mes</th>
               <th class="px-4 py-3 w-[30%]">Cantidad de Gastos</th>

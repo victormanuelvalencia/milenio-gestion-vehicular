@@ -186,7 +186,7 @@ const formatearFecha = (fechaStr) => {
     <div v-if="cargando" class="text-center py-16 text-gray-400">Cargando...</div>
     <div v-else class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
       <table class="w-full text-sm text-center table-fixed">
-        <thead class="bg-slate-800 text-white text-xs uppercase tracking-wide">
+        <thead class="bg-slate-800 text-white text-xs tracking-wide">
           <tr>
             <th class="px-4 py-3 w-[25%] text-left">Nombre / Correo</th>
             <th class="px-4 py-3 w-[15%]">Rol</th>

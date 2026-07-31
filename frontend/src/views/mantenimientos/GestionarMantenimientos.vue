@@ -175,7 +175,7 @@ onMounted(cargarDatos)
     <div v-else class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
       <div class="overflow-x-auto">
         <table class="w-full text-sm text-center">
-          <thead class="bg-slate-800 text-white text-xs uppercase tracking-wide">
+          <thead class="bg-slate-800 text-white text-xs tracking-wide">
             <tr>
               <th class="px-3 py-3 w-[10%]">Fecha</th>
               <th class="px-3 py-3 w-[10%]">Placa</th>

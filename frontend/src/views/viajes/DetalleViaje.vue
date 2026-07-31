@@ -57,7 +57,7 @@ onMounted(async () => {
         <div class="grid grid-cols-2 gap-4">
           <!-- Viaje / Manifiesto -->
           <div class="bg-blue-50 border border-blue-100 rounded-lg p-4 col-span-2">
-            <p class="text-xs font-semibold text-blue-400 uppercase tracking-wide mb-1">Manifiesto</p>
+            <p class="text-xs font-semibold text-blue-400 tracking-wide mb-1">Manifiesto</p>
             <p class="text-sm font-bold text-blue-800">{{ viaje.numero_manifiesto }}</p>
             <p class="text-xs text-blue-600 mt-1">
               <span class="font-semibold">{{ viaje.origen }} → {{ viaje.destino }}</span>
@@ -65,37 +65,37 @@ onMounted(async () => {
           </div>
 
           <div class="bg-slate-50 rounded-lg p-4">
-            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Fecha</p>
+            <p class="text-xs font-semibold text-gray-400 tracking-wide mb-1">Fecha</p>
             <p class="text-sm font-bold text-gray-800">{{ formatFecha(viaje.fecha) }}</p>
           </div>
           <div class="bg-slate-50 rounded-lg p-4">
-            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Empresa</p>
+            <p class="text-xs font-semibold text-gray-400 tracking-wide mb-1">Empresa</p>
             <p class="text-sm font-bold text-gray-800">{{ viaje.empresa }}</p>
           </div>
           
           <div class="bg-slate-50 rounded-lg p-4">
-            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Vehículo</p>
+            <p class="text-xs font-semibold text-gray-400 tracking-wide mb-1">Vehículo</p>
             <p class="text-sm font-bold text-gray-800">{{ viaje.vehiculo?.placa || '—' }}</p>
           </div>
           <div class="bg-slate-50 rounded-lg p-4">
-            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Conductor</p>
+            <p class="text-xs font-semibold text-gray-400 tracking-wide mb-1">Conductor</p>
             <p class="text-sm font-bold text-gray-800">{{ viaje.conductor?.nombre || '—' }}</p>
           </div>
 
           <!-- Finanzas -->
           <div class="bg-slate-50 rounded-lg p-4">
-            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Flete</p>
+            <p class="text-xs font-semibold text-gray-400 tracking-wide mb-1">Flete</p>
             <p class="text-sm font-bold text-blue-700">{{ formatMoneda(viaje.flete) }}</p>
           </div>
           <div class="bg-slate-50 rounded-lg p-4">
-            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Anticipo</p>
+            <p class="text-xs font-semibold text-gray-400 tracking-wide mb-1">Anticipo</p>
             <p class="text-sm font-bold text-orange-600">{{ formatMoneda(viaje.anticipo) }}</p>
           </div>
 
           <!-- Gastos -->
           <div class="bg-slate-50 rounded-lg p-4 col-span-2 flex justify-between items-center">
             <div>
-              <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Total de Gastos ({{ viaje.gastos?.length || 0 }})</p>
+              <p class="text-xs font-semibold text-gray-400 tracking-wide mb-1">Total de Gastos ({{ viaje.gastos?.length || 0 }})</p>
               <p class="text-sm font-bold text-gray-800">
                 {{ formatMoneda((viaje.gastos || []).reduce((acc, g) => acc + parseFloat(g.valor || 0), 0)) }}
               </p>
@@ -109,7 +109,7 @@ onMounted(async () => {
           </div>
 
           <div class="bg-slate-50 rounded-lg p-4 col-span-2">
-            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Utilidad (Flete - Gastos)</p>
+            <p class="text-xs font-semibold text-gray-400 tracking-wide mb-1">Utilidad (Flete - Gastos)</p>
             <p class="text-sm font-bold" :class="utilidad >= 0 ? 'text-emerald-600' : 'text-red-600'">
               {{ formatMoneda(utilidad) }}
             </p>

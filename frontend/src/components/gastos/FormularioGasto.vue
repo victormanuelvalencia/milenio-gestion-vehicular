@@ -219,7 +219,7 @@ watch(() => props.fechaInicial, (nuevaFecha) => {
         <div class="grid grid-cols-2 gap-4">
           <!-- Viaje / Manifiesto -->
           <div class="bg-blue-50 border border-blue-100 rounded-lg p-4 col-span-2">
-            <p class="text-xs font-semibold text-blue-400 uppercase tracking-wide mb-1">Viaje (Manifiesto)</p>
+            <p class="text-xs font-semibold text-blue-400 tracking-wide mb-1">Viaje (Manifiesto)</p>
             <p class="text-sm font-bold text-blue-800">{{ getViajeInfo(gastoInicial.viaje_id) }}</p>
             <p v-if="gastoInicial.vehiculo_id || gastoInicial.vehiculo" class="text-xs text-blue-600 mt-1">
               <span class="font-semibold">
@@ -229,25 +229,25 @@ watch(() => props.fechaInicial, (nuevaFecha) => {
           </div>
 
           <div class="bg-slate-50 rounded-lg p-4">
-            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Tipo de Gasto</p>
+            <p class="text-xs font-semibold text-gray-400 tracking-wide mb-1">Tipo de Gasto</p>
             <p class="text-sm font-bold text-gray-800">{{ getNombreTipo(gastoInicial.tipo_gasto_id) }}</p>
           </div>
           <div class="bg-slate-50 rounded-lg p-4">
-            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Fecha</p>
+            <p class="text-xs font-semibold text-gray-400 tracking-wide mb-1">Fecha</p>
             <p class="text-sm font-bold text-gray-800">{{ gastoInicial.fecha }}</p>
           </div>
           <div class="bg-slate-50 rounded-lg p-4">
-            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Valor</p>
+            <p class="text-xs font-semibold text-gray-400 tracking-wide mb-1">Valor</p>
             <p class="text-sm font-bold text-blue-700">{{ formatValor(gastoInicial.valor) }}</p>
           </div>
           <div class="bg-slate-50 rounded-lg p-4">
-            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Proveedor</p>
+            <p class="text-xs font-semibold text-gray-400 tracking-wide mb-1">Proveedor</p>
             <p class="text-sm font-bold text-gray-800">
               {{ gastoInicial.proveedor_manual || getNombreProveedor(gastoInicial.proveedor_id) }}
             </p>
           </div>
           <div v-if="gastoInicial.observaciones" class="bg-slate-50 rounded-lg p-4 col-span-2">
-            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Observaciones</p>
+            <p class="text-xs font-semibold text-gray-400 tracking-wide mb-1">Observaciones</p>
             <p class="text-sm text-gray-700">{{ gastoInicial.observaciones }}</p>
           </div>
         </div>
@@ -266,7 +266,7 @@ watch(() => props.fechaInicial, (nuevaFecha) => {
 
         <!-- Si viene desde un viaje: mostrar manifiesto y fecha como readonly -->
         <div v-if="desdeViaje" class="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-3">
-          <p class="text-xs font-semibold text-blue-500 uppercase tracking-wide">Datos del Viaje (solo lectura)</p>
+          <p class="text-xs font-semibold text-blue-500 tracking-wide">Datos del Viaje (solo lectura)</p>
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-semibold text-gray-500 mb-1">Número de Manifiesto</label>

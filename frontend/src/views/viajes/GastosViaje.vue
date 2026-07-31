@@ -81,7 +81,7 @@ onMounted(cargarDatos)
       <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
         <div class="overflow-x-auto">
           <table class="w-full text-sm text-center table-fixed">
-            <thead class="bg-slate-800 text-white text-xs uppercase tracking-wide">
+            <thead class="bg-slate-800 text-white text-xs tracking-wide">
               <tr>
                 <th class="px-4 py-3 w-[15%]">Fecha</th>
                 <th class="px-4 py-3 w-[15%]">Tipo de Gasto</th>
@@ -132,18 +132,18 @@ onMounted(cargarDatos)
       <!-- Resumen financiero debajo de la tabla -->
       <div v-if="viaje && gastos.length > 0" class="mt-4 grid grid-cols-3 gap-3">
         <div class="bg-blue-50 border border-blue-100 rounded-lg p-3 text-center">
-          <p class="text-xs text-blue-400 font-semibold uppercase tracking-wide">Flete</p>
+          <p class="text-xs text-blue-400 font-semibold tracking-wide">Flete</p>
           <p class="text-base font-bold text-blue-700">{{ formatMoneda(viaje.flete) }}</p>
         </div>
         <div class="bg-red-50 border border-red-100 rounded-lg p-3 text-center">
-          <p class="text-xs text-red-400 font-semibold uppercase tracking-wide">Total Gastos</p>
+          <p class="text-xs text-red-400 font-semibold tracking-wide">Total Gastos</p>
           <p class="text-base font-bold text-red-600">{{ formatMoneda(totalGastos) }}</p>
         </div>
         <div
           class="rounded-lg p-3 text-center border"
           :class="(viaje.flete - totalGastos) >= 0 ? 'bg-emerald-50 border-emerald-100' : 'bg-red-50 border-red-100'"
         >
-          <p class="text-xs font-semibold uppercase tracking-wide"
+          <p class="text-xs font-semibold tracking-wide"
              :class="(viaje.flete - totalGastos) >= 0 ? 'text-emerald-400' : 'text-red-400'">
             Utilidad
           </p>

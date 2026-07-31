@@ -162,7 +162,7 @@ onMounted(cargarConductores)
 
     <div v-else class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
       <table class="w-full text-sm text-center table-fixed">
-        <thead class="bg-slate-800 text-white text-xs uppercase tracking-wide">
+        <thead class="bg-slate-800 text-white text-xs tracking-wide">
           <tr>
             <th class="px-4 py-3 w-[30%]">Nombre</th>
             <th class="px-4 py-3 w-[25%]">Cédula</th>
