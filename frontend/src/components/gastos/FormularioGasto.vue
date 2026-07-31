@@ -168,6 +168,10 @@ const handleSubmit = async () => {
 const esReadOnly = props.modo === 'detalle'
 const titulo = { crear: 'Crear Gasto', editar: 'Editar Gasto', detalle: 'Detalle del Gasto' }[props.modo]
 
+
+watch(error, (val) => { if (val) setTimeout(() => error.value = '', 3000) })
+watch(mensajeExito, (val) => { if (val) setTimeout(() => mensajeExito.value = '', 3000) })
+
 onMounted(async () => {
   await cargarDependencias()
   inicializarFormulario()

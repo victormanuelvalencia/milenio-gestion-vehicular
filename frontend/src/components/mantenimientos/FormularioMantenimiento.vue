@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted , watch } from 'vue'
 import { mantenimientosService, vehiculosService, proveedoresService } from '@/services/modules'
 import SearchableSelect from '@/components/common/SearchableSelect.vue'
 
@@ -69,6 +69,9 @@ const guardar = async () => {
     creando.value = false
   }
 }
+
+
+watch(errorCrear, (val) => { if (val) setTimeout(() => errorCrear.value = '', 3000) })
 
 onMounted(cargarDatos)
 </script>

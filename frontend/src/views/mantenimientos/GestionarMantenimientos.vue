@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted , watch } from 'vue'
 import { mantenimientosService, vehiculosService, proveedoresService } from '@/services/modules'
 import FormularioMantenimiento from '@/components/mantenimientos/FormularioMantenimiento.vue'
 import SearchableSelect from '@/components/common/SearchableSelect.vue'
@@ -132,6 +132,10 @@ const mantenimientosPaginados = computed(() => {
 })
 const irPagina = (n) => { if (n >= 1 && n <= totalPaginas.value) paginaActual.value = n }
 const resetPagina = () => { paginaActual.value = 1 }
+
+
+watch(error, (val) => { if (val) setTimeout(() => error.value = '', 3000) })
+watch(mensajeExito, (val) => { if (val) setTimeout(() => mensajeExito.value = '', 3000) })
 
 onMounted(cargarDatos)
 </script>

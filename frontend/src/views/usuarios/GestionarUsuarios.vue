@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted , watch } from 'vue'
 import { usuariosService } from '@/services/modules'
 import { useAuthStore } from '@/stores/auth'
 
@@ -139,6 +139,10 @@ const usuariosPaginados = computed(() => {
   return usuarios.value.slice(inicio, inicio + POR_PAGINA)
 })
 const irPagina = (n) => { if (n >= 1 && n <= totalPaginas.value) paginaActual.value = n }
+
+
+watch(error, (val) => { if (val) setTimeout(() => error.value = '', 3000) })
+watch(mensajeExito, (val) => { if (val) setTimeout(() => mensajeExito.value = '', 3000) })
 
 onMounted(cargarUsuarios)
 

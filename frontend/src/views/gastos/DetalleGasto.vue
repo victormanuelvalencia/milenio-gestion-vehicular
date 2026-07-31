@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted , watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { gastosService } from '@/services/modules'
 import FormularioGasto from '@/components/gastos/FormularioGasto.vue'
@@ -8,6 +8,9 @@ const route = useRoute()
 const gasto = ref(null)
 const cargando = ref(true)
 const error = ref('')
+
+
+watch(error, (val) => { if (val) setTimeout(() => error.value = '', 3000) })
 
 onMounted(async () => {
   try {

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted , watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { viajesService, tiposGastoService, proveedoresService } from '@/services/modules'
 
@@ -53,6 +53,9 @@ const cargarDatos = async () => {
     cargando.value = false
   }
 }
+
+
+watch(error, (val) => { if (val) setTimeout(() => error.value = '', 3000) })
 
 onMounted(cargarDatos)
 </script>

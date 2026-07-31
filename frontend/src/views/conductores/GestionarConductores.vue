@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted , watch } from 'vue'
 import { conductoresService } from '@/services/modules'
 
 const conductores = ref([])
@@ -119,6 +119,11 @@ const conductoresPaginados = computed(() => {
 })
 const irPagina = (n) => { if (n >= 1 && n <= totalPaginas.value) paginaActual.value = n }
 const resetPagina = () => { paginaActual.value = 1 }
+
+
+watch(error, (val) => { if (val) setTimeout(() => error.value = '', 3000) })
+watch(mensajeExito, (val) => { if (val) setTimeout(() => mensajeExito.value = '', 3000) })
+watch(errorCrear, (val) => { if (val) setTimeout(() => errorCrear.value = '', 3000) })
 
 onMounted(cargarConductores)
 </script>

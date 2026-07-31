@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted , watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { gastosService, vehiculosService, tiposGastoService, proveedoresService } from '@/services/modules'
 import FormularioGasto from '@/components/gastos/FormularioGasto.vue'
@@ -110,6 +110,10 @@ const actualizarVerificacion = async (g) => {
     g.verificado_dian = !g.verificado_dian // revertir en caso de error
   }
 }
+
+
+watch(error, (val) => { if (val) setTimeout(() => error.value = '', 3000) })
+watch(mensajeExito, (val) => { if (val) setTimeout(() => mensajeExito.value = '', 3000) })
 
 onMounted(cargarDatos)
 </script>

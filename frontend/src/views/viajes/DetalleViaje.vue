@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted , watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { viajesService } from '@/services/modules'
 
@@ -24,6 +24,9 @@ const utilidad = computed(() => {
   const totalGastos = (viaje.value.gastos || []).reduce((acc, g) => acc + parseFloat(g.valor || 0), 0)
   return parseFloat(viaje.value.flete || 0) - totalGastos
 })
+
+
+watch(error, (val) => { if (val) setTimeout(() => error.value = '', 3000) })
 
 onMounted(async () => {
   try {
