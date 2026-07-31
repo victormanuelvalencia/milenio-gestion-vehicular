@@ -166,7 +166,7 @@ const handleSubmit = async () => {
 }
 
 const esReadOnly = props.modo === 'detalle'
-const titulo = { crear: 'Crear Gasto', editar: 'Editar Gasto', detalle: 'Detalle del Gasto' }[props.modo]
+const titulo = { crear: '', editar: 'Editar Gasto', detalle: 'Detalle del Gasto' }[props.modo]
 
 
 watch(error, (val) => { if (val) setTimeout(() => error.value = '', 3000) })

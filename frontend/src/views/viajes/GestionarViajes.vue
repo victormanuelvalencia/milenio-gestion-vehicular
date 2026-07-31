@@ -383,7 +383,7 @@ onMounted(cargarDatos)
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Anticipo (Opcional)</label>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Anticipo *</label>
               <input v-model.number="formularioCreacion.anticipo" type="number" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" />
             </div>
           </div>
