@@ -15,3 +15,4 @@ class Vehiculo(Base):
     # Relación uno a muchos con Gastos
     gastos: Mapped[List["Gasto"]] = relationship(back_populates="vehiculo", cascade="all, delete-orphan")
     viajes: Mapped[List["Viaje"]] = relationship(back_populates="vehiculo")
+    mantenimientos: Mapped[List["Mantenimiento"]] = relationship(back_populates="vehiculo", cascade="all, delete-orphan")
