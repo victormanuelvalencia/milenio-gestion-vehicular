@@ -4,7 +4,6 @@ from typing import Optional
 class VehiculoBase(BaseModel):
     placa: str
     marca: str
-    modelo: str
     ano: int
     estado: bool = True
 
@@ -14,7 +13,6 @@ class VehiculoCrear(VehiculoBase):
 class VehiculoActualizar(BaseModel):
     placa: Optional[str] = None
     marca: Optional[str] = None
-    modelo: Optional[str] = None
     ano: Optional[int] = None
     estado: Optional[bool] = None
 

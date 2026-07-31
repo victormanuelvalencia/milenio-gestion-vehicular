@@ -16,7 +16,6 @@ const errorCrear = ref('')
 const formularioCreacion = ref({
   placa: '',
   marca: '',
-  modelo: '',
   ano: new Date().getFullYear(),
   estado: true,
 })
@@ -39,7 +38,6 @@ const abrirModalCrear = () => {
   formularioCreacion.value = {
     placa: '',
     marca: '',
-    modelo: '',
     ano: new Date().getFullYear(),
     estado: true,
   }
@@ -143,8 +141,7 @@ onMounted(cargarVehiculos)
         <thead class="bg-slate-800 text-white text-xs uppercase tracking-wide">
           <tr>
             <th class="px-4 py-3 w-[15%]">Placa</th>
-            <th class="px-4 py-3 w-[15%]">Marca</th>
-            <th class="px-4 py-3 w-[15%]">Modelo</th>
+            <th class="px-4 py-3 w-[20%]">Marca</th>
             <th class="px-4 py-3 w-[15%]">Año</th>
             <th class="px-4 py-3 w-[15%]">Estado</th>
             <th class="px-4 py-3 w-[25%]">Acciones</th>
@@ -163,7 +160,6 @@ onMounted(cargarVehiculos)
           >
             <td class="px-4 py-3 font-bold text-gray-800">{{ v.placa }}</td>
             <td class="px-4 py-3 text-gray-700">{{ v.marca }}</td>
-            <td class="px-4 py-3 text-gray-700">{{ v.modelo }}</td>
             <td class="px-4 py-3 text-gray-700">{{ v.ano }}</td>
             <td class="px-4 py-3">
               <span
@@ -206,9 +202,6 @@ onMounted(cargarVehiculos)
             </td>
             <td class="px-4 py-2">
               <input v-model="formularioEdicion.marca" class="w-full px-2 py-1.5 border border-blue-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            </td>
-            <td class="px-4 py-2">
-              <input v-model="formularioEdicion.modelo" class="w-full px-2 py-1.5 border border-blue-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </td>
             <td class="px-4 py-2">
               <input v-model.number="formularioEdicion.ano" type="number" class="w-full px-2 py-1.5 border border-blue-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
@@ -266,10 +259,6 @@ onMounted(cargarVehiculos)
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Marca *</label>
             <input v-model="formularioCreacion.marca" required placeholder="ej. Chevrolet" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Modelo *</label>
-            <input v-model="formularioCreacion.modelo" required placeholder="ej. FRR" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" />
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div>

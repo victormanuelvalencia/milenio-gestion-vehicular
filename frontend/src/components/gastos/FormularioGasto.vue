@@ -198,7 +198,7 @@ watch(() => props.gastoInicial, inicializarFormulario)
             <label class="block text-sm font-semibold text-gray-700 mb-1">Vehículo *</label>
             <select v-model="formulario.vehiculo_id" required :disabled="esReadOnly" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-500">
               <option value="" disabled>Seleccionar vehículo...</option>
-              <option v-for="v in vehiculosActivos" :key="v.id" :value="v.id">{{ v.placa }} - {{ v.marca }} {{ v.modelo }}</option>
+              <option v-for="v in vehiculosActivos" :key="v.id" :value="v.id">{{ v.placa }} - {{ v.marca }}</option>
             </select>
             <p v-if="vehiculosActivos.length === 0 && !esReadOnly" class="text-xs text-orange-500 mt-1">No hay vehículos activos disponibles.</p>
           </div>

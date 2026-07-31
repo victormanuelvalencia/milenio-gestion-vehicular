@@ -69,7 +69,7 @@ const exportarPDF = () => exportarAPDF(resultados.value, columnasExportacion, 'H
           <label class="block text-sm font-medium text-gray-700 mb-1">Vehículo</label>
           <select v-model="filtros.vehiculo_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
             <option value="">Todos los vehículos</option>
-            <option v-for="v in vehiculos" :key="v.id" :value="v.id">{{ v.placa }} — {{ v.marca }} {{ v.modelo }}</option>
+            <option v-for="v in vehiculos" :key="v.id" :value="v.id">{{ v.placa }} — {{ v.marca }}</option>
           </select>
         </div>
         <div>

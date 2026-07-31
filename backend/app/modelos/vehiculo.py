@@ -9,7 +9,6 @@ class Vehiculo(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     placa: Mapped[str] = mapped_column(String(20), unique=True, index=True)
     marca: Mapped[str] = mapped_column(String(50))
-    modelo: Mapped[str] = mapped_column(String(50))
     ano: Mapped[int] = mapped_column(Integer)
     estado: Mapped[bool] = mapped_column(Boolean, default=True)
 

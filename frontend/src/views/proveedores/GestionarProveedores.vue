@@ -13,7 +13,7 @@ const formularioEdicion = ref({})
 const mostrarModalCrear = ref(false)
 const creando = ref(false)
 const errorCrear = ref('')
-const formularioCreacion = ref({ nombre: '', nit: '', direccion: '' })
+const formularioCreacion = ref({ nombre: '', nit: '' })
 
 const cargarProveedores = async () => {
   cargando.value = true
@@ -30,7 +30,7 @@ const cargarProveedores = async () => {
 
 const abrirModalCrear = () => {
   errorCrear.value = ''
-  formularioCreacion.value = { nombre: '', nit: '', direccion: '' }
+  formularioCreacion.value = { nombre: '', nit: '' }
   mostrarModalCrear.value = true
 }
 
@@ -117,8 +117,7 @@ onMounted(cargarProveedores)
           <tr>
             <th class="px-4 py-3 w-[25%]">Nombre</th>
             <th class="px-4 py-3 w-[25%]">NIT</th>
-            <th class="px-4 py-3 w-[25%]">Dirección</th>
-            <th class="px-4 py-3 w-[25%]">Acciones</th>
+            <th class="px-4 py-3 w-[50%]">Acciones</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100">
@@ -129,7 +128,6 @@ onMounted(cargarProveedores)
           <tr v-for="p in proveedoresPaginados" :key="p.id" class="hover:bg-slate-50" v-show="editando !== p.id">
             <td class="px-4 py-3 font-medium text-gray-800">{{ p.nombre }}</td>
             <td class="px-4 py-3 text-gray-700 font-mono">{{ p.nit }}</td>
-            <td class="px-4 py-3 text-gray-600">{{ p.direccion || '—' }}</td>
             <td class="px-4 py-3">
               <button @click="iniciarEdicion(p)" title="Editar" class="text-blue-500 hover:text-blue-700 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>
@@ -140,7 +138,6 @@ onMounted(cargarProveedores)
           <tr v-for="p in proveedoresPaginados" :key="'e-' + p.id" v-show="editando === p.id" class="bg-blue-50 border-l-4 border-blue-500">
             <td class="px-4 py-2"><input v-model="formularioEdicion.nombre" class="w-full px-2 py-1.5 border border-blue-300 rounded-md text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500" /></td>
             <td class="px-4 py-2"><input v-model="formularioEdicion.nit" class="w-full px-2 py-1.5 border border-blue-300 rounded-md text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500" /></td>
-            <td class="px-4 py-2"><input v-model="formularioEdicion.direccion" class="w-full px-2 py-1.5 border border-blue-300 rounded-md text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500" /></td>
             <td class="px-4 py-3">
               <div class="flex justify-center gap-3">
                 <button @click="guardarEdicion(p.id)" title="Guardar" class="text-green-600 hover:text-green-800 transition-colors">
@@ -191,10 +188,6 @@ onMounted(cargarProveedores)
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">NIT *</label>
             <input v-model="formularioCreacion.nit" required placeholder="ej. 900123456-1" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
-            <input v-model="formularioCreacion.direccion" placeholder="ej. Cra 10 #20-30" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" />
           </div>
           <div class="pt-4 flex justify-end gap-3 border-t border-gray-100 mt-6">
             <button type="button" @click="cerrarModalCrear" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Cancelar</button>
