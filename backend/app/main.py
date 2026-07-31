@@ -1,6 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
+from sqlalchemy.exc import IntegrityError
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
 
 from app.base_datos.inicializar import inicializar_base_datos
 
@@ -15,6 +16,25 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan
 )
+
+@app.exception_handler(IntegrityError)
+async def integrity_error_handler(request: Request, exc: IntegrityError):
+    error_msg = str(exc).lower()
+    if "foreign key" in error_msg or "violates foreign key constraint" in error_msg or "foreign_key" in error_msg or "fk_" in error_msg:
+        return JSONResponse(
+            status_code=400,
+            content={"detail": "No se puede eliminar este registro porque está asociado a uno o más viajes, gastos u otros registros en el sistema."}
+        )
+    elif "unique constraint" in error_msg or "violates unique constraint" in error_msg:
+        return JSONResponse(
+            status_code=400,
+            content={"detail": "Ya existe un registro con estos datos (valor duplicado)."}
+        )
+    
+    return JSONResponse(
+        status_code=400,
+        content={"detail": "Error de integridad en la base de datos. Verifica la información enviada."}
+    )
 
 from fastapi.middleware.cors import CORSMiddleware
 
