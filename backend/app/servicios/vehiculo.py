@@ -39,6 +39,13 @@ def actualizar(bd: Session, id_vehiculo: int, vehiculo_actualizar: VehiculoActua
 
 def eliminar(bd: Session, id_vehiculo: int):
     db_vehiculo = obtener_por_id(bd, id_vehiculo)
-    bd.delete(db_vehiculo)
-    bd.commit()
-    return {"mensaje": "Vehículo eliminado exitosamente"}
+    try:
+        bd.delete(db_vehiculo)
+        bd.commit()
+        return {"mensaje": "Vehículo eliminado exitosamente"}
+    except IntegrityError:
+        bd.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No se puede eliminar este vehículo porque tiene viajes, gastos o mantenimientos asociados en el sistema."
+        )

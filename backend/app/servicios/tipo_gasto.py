@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from app.modelos.tipo_gasto import TipoGasto
 from app.esquemas.tipo_gasto import TipoGastoCrear, TipoGastoActualizar
 from fastapi import HTTPException, status
+from sqlalchemy.exc import IntegrityError
 
 def obtener_todos(bd: Session, skip: int = 0, limit: int = 10):
     return bd.query(TipoGasto).offset(skip).limit(limit).all()
@@ -30,6 +31,13 @@ def actualizar(bd: Session, id_tipo: int, tipo_actualizar: TipoGastoActualizar):
 
 def eliminar(bd: Session, id_tipo: int):
     db_tipo = obtener_por_id(bd, id_tipo)
-    bd.delete(db_tipo)
-    bd.commit()
-    return {"mensaje": "Tipo de gasto eliminado exitosamente"}
+    try:
+        bd.delete(db_tipo)
+        bd.commit()
+        return {"mensaje": "Tipo de gasto eliminado exitosamente"}
+    except IntegrityError:
+        bd.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No se puede eliminar este tipo de gasto porque está asociado a uno o más gastos registrados en el sistema."
+        )

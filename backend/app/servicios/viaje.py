@@ -50,6 +50,13 @@ def actualizar(bd: Session, id_viaje: int, viaje_actualizar: ViajeActualizar):
 
 def eliminar(bd: Session, id_viaje: int):
     db_viaje = obtener_por_id(bd, id_viaje)
-    bd.delete(db_viaje)
-    bd.commit()
-    return {"mensaje": "Viaje eliminado exitosamente"}
+    try:
+        bd.delete(db_viaje)
+        bd.commit()
+        return {"mensaje": "Viaje eliminado exitosamente"}
+    except IntegrityError:
+        bd.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No se puede eliminar este viaje porque tiene gastos u otros registros asociados en el sistema."
+        )

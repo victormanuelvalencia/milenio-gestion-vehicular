@@ -39,6 +39,13 @@ def actualizar(bd: Session, id_proveedor: int, proveedor_actualizar: ProveedorAc
 
 def eliminar(bd: Session, id_proveedor: int):
     db_proveedor = obtener_por_id(bd, id_proveedor)
-    bd.delete(db_proveedor)
-    bd.commit()
-    return {"mensaje": "Proveedor eliminado exitosamente"}
+    try:
+        bd.delete(db_proveedor)
+        bd.commit()
+        return {"mensaje": "Proveedor eliminado exitosamente"}
+    except IntegrityError:
+        bd.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No se puede eliminar este proveedor porque está asociado a uno o más gastos o mantenimientos en el sistema."
+        )
