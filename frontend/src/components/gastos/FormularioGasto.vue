@@ -220,7 +220,6 @@ watch(() => props.fechaInicial, (nuevaFecha) => {
               Vehículo:
               <span class="font-semibold">
                 {{ gastoInicial.vehiculo?.placa || `ID ${gastoInicial.vehiculo_id}` }}
-                <span v-if="gastoInicial.vehiculo?.marca"> — {{ gastoInicial.vehiculo.marca }}</span>
               </span>
             </p>
           </div>
@@ -313,7 +312,6 @@ watch(() => props.fechaInicial, (nuevaFecha) => {
           <p class="text-sm text-blue-700">
             Vehículo asociado:
             <span class="font-bold">{{ viajeSeleccionado.vehiculo?.placa || '—' }}</span>
-            <span v-if="viajeSeleccionado.vehiculo?.marca" class="text-blue-500"> — {{ viajeSeleccionado.vehiculo.marca }}</span>
           </p>
         </div>
 
