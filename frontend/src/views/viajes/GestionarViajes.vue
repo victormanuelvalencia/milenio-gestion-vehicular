@@ -361,7 +361,7 @@ onMounted(cargarDatos)
               <label class="block text-sm font-medium text-gray-700 mb-1">Conductor *</label>
               <SearchableSelect
                 v-model="formularioCreacion.conductor_id"
-                :options="conductores.map(c => ({ value: c.id, label: `${c.nombre} (${c.cedula})` }))"
+                :options="conductores.map(c => ({ value: c.id, label: `${c.nombre}` }))"
                 placeholder="Seleccione..."
                 required
               />

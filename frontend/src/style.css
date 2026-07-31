@@ -1,1 +1,52 @@
 @import "tailwindcss";
+
+/* ============================================================
+   TEMA TIPOGRÁFICO GLOBAL — Milenio Gestión Vehicular
+   Fuente principal: Inter (Google Fonts)
+   Todos los cambios tipográficos se realizan aquí.
+   ============================================================ */
+
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Aplicar Inter a todo el documento */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  color: #1e293b;
+  text-transform: uppercase;
+}
+
+/* Garantizar que inputs, selects, textareas y botones hereden la fuente */
+input, select, textarea, button, optgroup, option {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}
+
+/* Tablas */
+table {
+  font-family: var(--font-sans);
+}
+
+/* Escala tipográfica consistente */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
