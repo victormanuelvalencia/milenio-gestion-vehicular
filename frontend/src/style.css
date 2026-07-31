@@ -27,7 +27,6 @@ body {
   font-size: 14px;
   line-height: 1.5;
   color: #1e293b;
-  text-transform: uppercase;
 }
 
 /* Garantizar que inputs, selects, textareas y botones hereden la fuente */

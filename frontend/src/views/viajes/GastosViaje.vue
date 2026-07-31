@@ -64,11 +64,6 @@ onMounted(cargarDatos)
   <div>
     <!-- Encabezado -->
     <div class="mb-6 flex items-center gap-3">
-      <button @click="router.back()" class="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-        </svg>
-      </button>
       <div>
         <h2 class="text-2xl font-bold text-gray-800">Gastos del Viaje</h2>
         <p v-if="viaje" class="text-sm text-gray-500 mt-0.5">
@@ -128,17 +123,6 @@ onMounted(cargarDatos)
                     </svg>
                   </button>
                 </td>
-              </tr>
-
-              <!-- Fila de total -->
-              <tr v-if="gastos.length > 0" class="bg-slate-50 border-t-2 border-slate-300">
-                <td colspan="3" class="px-4 py-3 text-right font-bold text-gray-700 text-sm">
-                  Total de gastos:
-                </td>
-                <td class="px-4 py-3 font-bold text-slate-800 text-sm">
-                  {{ formatMoneda(totalGastos) }}
-                </td>
-                <td colspan="3"></td>
               </tr>
             </tbody>
           </table>
