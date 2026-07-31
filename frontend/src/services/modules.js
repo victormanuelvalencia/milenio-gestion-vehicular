@@ -34,6 +34,14 @@ export const gastosService = {
   eliminar: (id) => api.delete(`/gastos/${id}`),
 }
 
+export const conductoresService = {
+  obtenerTodos: () => api.get('/conductores'),
+  obtenerPorId: (id) => api.get(`/conductores/${id}`),
+  crear: (datos) => api.post('/conductores', datos),
+  actualizar: (id, datos) => api.put(`/conductores/${id}`, datos),
+  eliminar: (id) => api.delete(`/conductores/${id}`),
+}
+
 export const reportesService = {
   gastosPorVehiculo: (params) => api.get('/reportes/gastos-por-vehiculo', { params }),
   gastosPorMes: (params) => api.get('/reportes/gastos-por-mes', { params }),
