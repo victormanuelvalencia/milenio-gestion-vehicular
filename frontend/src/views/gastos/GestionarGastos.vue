@@ -22,14 +22,28 @@ const onGastoCreado = async () => {
   await cargarDatos()
 }
 
+const busqueda = ref('')
+
 const POR_PAGINA = 15
 const paginaActual = ref(1)
-const totalPaginas = computed(() => Math.ceil(gastos.value.length / POR_PAGINA))
+const gastosFiltrados = computed(() => {
+  const q = busqueda.value.toLowerCase().trim()
+  if (!q) return gastos.value
+  return gastos.value.filter(g => {
+    const manifiesto = g.viaje?.numero_manifiesto?.toLowerCase() || ''
+    const tipo = tiposGasto.value.find(t => t.id === g.tipo_gasto_id)?.nombre?.toLowerCase() || ''
+    const proveedor = (g.proveedor_manual || proveedores.value.find(p => p.id === g.proveedor_id)?.nombre || '').toLowerCase()
+    const obs = (g.observaciones || '').toLowerCase()
+    return manifiesto.includes(q) || tipo.includes(q) || proveedor.includes(q) || obs.includes(q)
+  })
+})
+const totalPaginas = computed(() => Math.max(1, Math.ceil(gastosFiltrados.value.length / POR_PAGINA)))
 const gastosPaginados = computed(() => {
   const inicio = (paginaActual.value - 1) * POR_PAGINA
-  return gastos.value.slice(inicio, inicio + POR_PAGINA)
+  return gastosFiltrados.value.slice(inicio, inicio + POR_PAGINA)
 })
 const irPagina = (n) => { if (n >= 1 && n <= totalPaginas.value) paginaActual.value = n }
+const resetPagina = () => { paginaActual.value = 1 }
 
 const getNombreVehiculo = (id) => vehiculos.value.find(v => v.id === id)?.placa || `#${id}`
 const getNombreTipo = (id) => tiposGasto.value.find(t => t.id === id)?.nombre || `#${id}`
@@ -115,6 +129,12 @@ onMounted(cargarDatos)
       </button>
     </div>
 
+    <!-- Buscador -->
+    <div class="mb-4 relative">
+      <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+      <input v-model="busqueda" @input="resetPagina" type="text" placeholder="Buscar por manifiesto, tipo, proveedor u observaciones..." class="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-sm" />
+    </div>
+
     <div v-if="mensajeExito" class="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm flex justify-between">
       {{ mensajeExito }}<button @click="mensajeExito = ''" class="font-bold">x</button>
     </div>
@@ -138,8 +158,8 @@ onMounted(cargarDatos)
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100">
-          <tr v-if="gastos.length === 0">
-            <td colspan="7" class="text-center py-10 text-gray-400">No hay gastos registrados.</td>
+          <tr v-if="gastosFiltrados.length === 0">
+            <td colspan="7" class="text-center py-10 text-gray-400">{{ busqueda ? 'Sin resultados para la búsqueda.' : 'No hay gastos registrados.' }}</td>
           </tr>
           <tr v-for="g in gastosPaginados" :key="g.id" class="hover:bg-slate-50 transition-colors">
             <td class="px-4 py-3 text-gray-600">{{ formatFecha(g.fecha) }}</td>
@@ -193,7 +213,7 @@ onMounted(cargarDatos)
       <button @click="irPagina(paginaActual + 1)" :disabled="paginaActual === totalPaginas" class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed bg-white border border-gray-200 text-gray-600 hover:bg-slate-50">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
       </button>
-      <span class="ml-2 text-sm text-gray-500">Página {{ paginaActual }} de {{ totalPaginas }} · {{ gastos.length }} registros</span>
+      <span class="ml-2 text-sm text-gray-500">Página {{ paginaActual }} de {{ totalPaginas }} · {{ gastosFiltrados.length }} registros</span>
     </div>
 
     <!-- Modal de Creación -->

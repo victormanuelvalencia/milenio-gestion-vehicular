@@ -109,14 +109,28 @@ const eliminarMantenimiento = async (m) => {
   }
 }
 
+const busqueda = ref('')
+const mantenimientosFiltrados = computed(() => {
+  const q = busqueda.value.toLowerCase().trim()
+  if (!q) return mantenimientos.value
+  return mantenimientos.value.filter(m => {
+    const placa = (m.vehiculo?.placa || '').toLowerCase()
+    const provManual = (m.proveedor_manual || '').toLowerCase()
+    const provRegistrado = (getNombreProveedor(m.proveedor_id) || '').toLowerCase()
+    const desc = (m.descripcion || '').toLowerCase()
+    return placa.includes(q) || provManual.includes(q) || provRegistrado.includes(q) || desc.includes(q)
+  })
+})
+
 const POR_PAGINA = 10
 const paginaActual = ref(1)
-const totalPaginas = computed(() => Math.ceil(mantenimientos.value.length / POR_PAGINA))
+const totalPaginas = computed(() => Math.max(1, Math.ceil(mantenimientosFiltrados.value.length / POR_PAGINA)))
 const mantenimientosPaginados = computed(() => {
   const inicio = (paginaActual.value - 1) * POR_PAGINA
-  return mantenimientos.value.slice(inicio, inicio + POR_PAGINA)
+  return mantenimientosFiltrados.value.slice(inicio, inicio + POR_PAGINA)
 })
 const irPagina = (n) => { if (n >= 1 && n <= totalPaginas.value) paginaActual.value = n }
+const resetPagina = () => { paginaActual.value = 1 }
 
 onMounted(cargarDatos)
 </script>
@@ -145,6 +159,12 @@ onMounted(cargarDatos)
       <button @click="error = ''" class="font-bold hover:text-red-900">x</button>
     </div>
 
+    <!-- Buscador -->
+    <div class="mb-4 relative">
+      <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+      <input v-model="busqueda" @input="resetPagina" type="text" placeholder="Buscar por placa, proveedor o descripción..." class="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-sm" />
+    </div>
+
     <div v-if="cargando" class="text-center py-16 text-gray-400 text-lg">Cargando mantenimientos...</div>
 
     <div v-else class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
@@ -152,17 +172,18 @@ onMounted(cargarDatos)
         <table class="w-full text-sm text-center">
           <thead class="bg-slate-800 text-white text-xs uppercase tracking-wide">
             <tr>
-              <th class="px-3 py-3 w-[12%]">Fecha</th>
-              <th class="px-3 py-3 w-[12%]">Placa</th>
-              <th class="px-3 py-3 w-[15%]">Kilometraje</th>
-              <th class="px-3 py-3 w-[30%]">Proveedor</th>
-              <th class="px-3 py-3 w-[15%]">Valor</th>
-              <th class="px-3 py-3 w-[16%]">Acciones</th>
+              <th class="px-3 py-3 w-[10%]">Fecha</th>
+              <th class="px-3 py-3 w-[10%]">Placa</th>
+              <th class="px-3 py-3 w-[10%]">Kilometraje</th>
+              <th class="px-3 py-3 w-[25%]">Descripción</th>
+              <th class="px-3 py-3 w-[20%]">Proveedor</th>
+              <th class="px-3 py-3 w-[10%]">Valor</th>
+              <th class="px-3 py-3 w-[15%]">Acciones</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100">
-            <tr v-if="mantenimientos.length === 0">
-              <td colspan="6" class="text-center py-10 text-gray-400">No hay mantenimientos registrados.</td>
+            <tr v-if="mantenimientosFiltrados.length === 0">
+              <td colspan="7" class="text-center py-10 text-gray-400">{{ busqueda ? 'Sin resultados para la búsqueda.' : 'No hay mantenimientos registrados.' }}</td>
             </tr>
             <!-- Fila Normal -->
             <tr
@@ -174,7 +195,8 @@ onMounted(cargarDatos)
               <td class="px-3 py-3 font-medium text-gray-700">{{ formatFecha(m.fecha) }}</td>
               <td class="px-3 py-3 font-bold text-gray-800">{{ m.vehiculo?.placa || '—' }}</td>
               <td class="px-3 py-3 text-gray-600">{{ m.kilometraje.toLocaleString('es-CO') }} km</td>
-              <td class="px-3 py-3 text-gray-600 truncate max-w-[200px]" :title="m.proveedor_manual || getNombreProveedor(m.proveedor_id)">
+              <td class="px-3 py-3 text-gray-600 max-w-[150px] truncate" :title="m.descripcion">{{ m.descripcion || '—' }}</td>
+              <td class="px-3 py-3 text-gray-600 truncate max-w-[150px]" :title="m.proveedor_manual || getNombreProveedor(m.proveedor_id)">
                 {{ m.proveedor_manual || getNombreProveedor(m.proveedor_id) }}
               </td>
               <td class="px-3 py-3 font-semibold text-blue-700">{{ formatMoneda(m.valor) }}</td>
@@ -203,6 +225,7 @@ onMounted(cargarDatos)
                 </select>
               </td>
               <td class="px-2 py-2"><input v-model.number="formularioEdicion.kilometraje" type="number" class="w-full px-1 py-1 text-xs border rounded" /></td>
+              <td class="px-2 py-2"><input v-model="formularioEdicion.descripcion" placeholder="Descripción" class="w-full px-1 py-1 text-xs border rounded" /></td>
               <td class="px-2 py-2">
                 <div class="flex gap-2 mb-1 justify-center">
                   <label class="text-[10px] flex items-center gap-1 cursor-pointer"><input type="radio" :value="false" v-model="editarUsarProveedorRegistrado" /> Manual</label>
@@ -239,7 +262,7 @@ onMounted(cargarDatos)
       <button @click="irPagina(paginaActual + 1)" :disabled="paginaActual === totalPaginas" class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed bg-white border border-gray-200 text-gray-600 hover:bg-slate-50">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
       </button>
-      <span class="ml-2 text-sm text-gray-500">Página {{ paginaActual }} de {{ totalPaginas }} · {{ mantenimientos.length }} registros</span>
+      <span class="ml-2 text-sm text-gray-500">Página {{ paginaActual }} de {{ totalPaginas }} · {{ mantenimientosFiltrados.length }} registros</span>
     </div>
 
     <!-- Modal de Creación -->

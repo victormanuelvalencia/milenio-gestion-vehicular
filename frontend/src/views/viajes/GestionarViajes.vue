@@ -136,14 +136,28 @@ const eliminarViaje = async (viaje) => {
   }
 }
 
+const busqueda = ref('')
+const viajesFiltrados = computed(() => {
+  const q = busqueda.value.toLowerCase().trim()
+  if (!q) return viajes.value
+  return viajes.value.filter(v =>
+    v.numero_manifiesto?.toLowerCase().includes(q) ||
+    v.empresa?.toLowerCase().includes(q) ||
+    v.origen?.toLowerCase().includes(q) ||
+    v.destino?.toLowerCase().includes(q) ||
+    v.vehiculo?.placa?.toLowerCase().includes(q)
+  )
+})
+
 const POR_PAGINA = 10
 const paginaActual = ref(1)
-const totalPaginas = computed(() => Math.ceil(viajes.value.length / POR_PAGINA))
+const totalPaginas = computed(() => Math.max(1, Math.ceil(viajesFiltrados.value.length / POR_PAGINA)))
 const viajesPaginados = computed(() => {
   const inicio = (paginaActual.value - 1) * POR_PAGINA
-  return viajes.value.slice(inicio, inicio + POR_PAGINA)
+  return viajesFiltrados.value.slice(inicio, inicio + POR_PAGINA)
 })
 const irPagina = (n) => { if (n >= 1 && n <= totalPaginas.value) paginaActual.value = n }
+const resetPagina = () => { paginaActual.value = 1 }
 
 onMounted(cargarDatos)
 </script>
@@ -172,6 +186,12 @@ onMounted(cargarDatos)
       <button @click="error = ''" class="font-bold hover:text-red-900">x</button>
     </div>
 
+    <!-- Buscador -->
+    <div class="mb-4 relative">
+      <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+      <input v-model="busqueda" @input="resetPagina" type="text" placeholder="Buscar por manifiesto, empresa, ruta o placa..." class="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-sm" />
+    </div>
+
     <div v-if="cargando" class="text-center py-16 text-gray-400 text-lg">Cargando viajes...</div>
 
     <div v-else class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
@@ -190,8 +210,8 @@ onMounted(cargarDatos)
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100">
-            <tr v-if="viajes.length === 0">
-              <td colspan="8" class="text-center py-10 text-gray-400">No hay viajes registrados.</td>
+            <tr v-if="viajesFiltrados.length === 0">
+              <td colspan="8" class="text-center py-10 text-gray-400">{{ busqueda ? 'Sin resultados para la búsqueda.' : 'No hay viajes registrados.' }}</td>
             </tr>
             <!-- Fila Normal -->
             <tr

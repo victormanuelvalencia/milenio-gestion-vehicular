@@ -17,6 +17,7 @@ class Mantenimiento(Base):
     proveedor_id: Mapped[Optional[int]] = mapped_column(ForeignKey("proveedores.id", ondelete="SET NULL"), nullable=True)
     
     # Campos adicionales
+    descripcion: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     proveedor_manual: Mapped[Optional[str]] = mapped_column(String(150), nullable=True)
 
     # Relaciones

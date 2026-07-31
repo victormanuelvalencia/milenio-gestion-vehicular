@@ -101,14 +101,24 @@ const eliminarConductor = async (conductor) => {
   }
 }
 
+const busqueda = ref('')
+const conductoresFiltrados = computed(() => {
+  const q = busqueda.value.toLowerCase().trim()
+  if (!q) return conductores.value
+  return conductores.value.filter(c =>
+    c.nombre?.toLowerCase().includes(q) || c.cedula?.toLowerCase().includes(q)
+  )
+})
+
 const POR_PAGINA = 15
 const paginaActual = ref(1)
-const totalPaginas = computed(() => Math.ceil(conductores.value.length / POR_PAGINA))
+const totalPaginas = computed(() => Math.max(1, Math.ceil(conductoresFiltrados.value.length / POR_PAGINA)))
 const conductoresPaginados = computed(() => {
   const inicio = (paginaActual.value - 1) * POR_PAGINA
-  return conductores.value.slice(inicio, inicio + POR_PAGINA)
+  return conductoresFiltrados.value.slice(inicio, inicio + POR_PAGINA)
 })
 const irPagina = (n) => { if (n >= 1 && n <= totalPaginas.value) paginaActual.value = n }
+const resetPagina = () => { paginaActual.value = 1 }
 
 onMounted(cargarConductores)
 </script>
@@ -137,6 +147,12 @@ onMounted(cargarConductores)
       <button @click="error = ''" class="font-bold hover:text-red-900">x</button>
     </div>
 
+    <!-- Buscador -->
+    <div class="mb-4 relative">
+      <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+      <input v-model="busqueda" @input="resetPagina" type="text" placeholder="Buscar por nombre o cédula..." class="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-sm" />
+    </div>
+
     <div v-if="cargando" class="text-center py-16 text-gray-400 text-lg">Cargando conductores...</div>
 
     <div v-else class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
@@ -150,8 +166,8 @@ onMounted(cargarConductores)
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100">
-          <tr v-if="conductores.length === 0">
-            <td colspan="4" class="text-center py-10 text-gray-400">No hay conductores registrados.</td>
+          <tr v-if="conductoresFiltrados.length === 0">
+            <td colspan="4" class="text-center py-10 text-gray-400">{{ busqueda ? 'Sin resultados para la búsqueda.' : 'No hay conductores registrados.' }}</td>
           </tr>
           <!-- Fila Normal -->
           <tr
@@ -241,7 +257,7 @@ onMounted(cargarConductores)
       <button @click="irPagina(paginaActual + 1)" :disabled="paginaActual === totalPaginas" class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed bg-white border border-gray-200 text-gray-600 hover:bg-slate-50">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
       </button>
-      <span class="ml-2 text-sm text-gray-500">Página {{ paginaActual }} de {{ totalPaginas }} · {{ conductores.length }} registros</span>
+      <span class="ml-2 text-sm text-gray-500">Página {{ paginaActual }} de {{ totalPaginas }} · {{ conductoresFiltrados.length }} registros</span>
     </div>
 
     <!-- Modal de Creación -->

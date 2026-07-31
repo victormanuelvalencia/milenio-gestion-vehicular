@@ -8,6 +8,7 @@ class MantenimientoBase(BaseModel):
     vehiculo_id: int
     proveedor_id: Optional[int] = None
     proveedor_manual: Optional[str] = None
+    descripcion: Optional[str] = None
     valor: float
 
 class MantenimientoCrear(MantenimientoBase):
@@ -19,6 +20,7 @@ class MantenimientoActualizar(BaseModel):
     vehiculo_id: Optional[int] = None
     proveedor_id: Optional[int] = None
     proveedor_manual: Optional[str] = None
+    descripcion: Optional[str] = None
     valor: Optional[float] = None
 
 from app.esquemas.vehiculo import VehiculoRespuesta
