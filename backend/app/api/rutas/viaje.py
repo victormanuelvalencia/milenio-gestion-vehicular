@@ -6,7 +6,8 @@ from app.esquemas.gasto import GastoRespuesta
 from app.servicios import viaje as servicio_viaje
 from app.servicios import gasto as servicio_gasto
 from app.dependencias.base_datos import obtener_bd
-from app.dependencias.seguridad import obtener_usuario_actual
+from app.dependencias.seguridad import obtener_usuario_actual, requerir_superadmin
+from app.modelos.usuario import Usuario
 
 enrutador = APIRouter(
     prefix="/viajes",
@@ -33,15 +34,15 @@ def obtener_gastos_de_viaje(id_viaje: int, bd: Session = Depends(obtener_bd)):
 
 
 @enrutador.post("/", response_model=ViajeRespuesta, status_code=status.HTTP_201_CREATED)
-def crear_viaje(viaje: ViajeCrear, bd: Session = Depends(obtener_bd)):
+def crear_viaje(viaje: ViajeCrear, bd: Session = Depends(obtener_bd), _: Usuario = Depends(requerir_superadmin)):
     return servicio_viaje.crear(bd, viaje_crear=viaje)
 
 
 @enrutador.put("/{id_viaje}", response_model=ViajeRespuesta)
-def actualizar_viaje(id_viaje: int, viaje: ViajeActualizar, bd: Session = Depends(obtener_bd)):
+def actualizar_viaje(id_viaje: int, viaje: ViajeActualizar, bd: Session = Depends(obtener_bd), _: Usuario = Depends(requerir_superadmin)):
     return servicio_viaje.actualizar(bd, id_viaje=id_viaje, viaje_actualizar=viaje)
 
 
 @enrutador.delete("/{id_viaje}")
-def eliminar_viaje(id_viaje: int, bd: Session = Depends(obtener_bd)):
+def eliminar_viaje(id_viaje: int, bd: Session = Depends(obtener_bd), _: Usuario = Depends(requerir_superadmin)):
     return servicio_viaje.eliminar(bd, id_viaje=id_viaje)

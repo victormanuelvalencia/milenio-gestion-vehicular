@@ -4,7 +4,8 @@ from sqlalchemy.orm import Session
 from app.esquemas.conductor import ConductorRespuesta, ConductorCrear, ConductorActualizar
 from app.servicios import conductor as servicio_conductor
 from app.dependencias.base_datos import obtener_bd
-from app.dependencias.seguridad import obtener_usuario_actual
+from app.dependencias.seguridad import obtener_usuario_actual, requerir_superadmin
+from app.modelos.usuario import Usuario
 
 enrutador = APIRouter(
     prefix="/conductores",
@@ -24,15 +25,15 @@ def obtener_conductor(id_conductor: int, bd: Session = Depends(obtener_bd)):
 
 
 @enrutador.post("/", response_model=ConductorRespuesta, status_code=status.HTTP_201_CREATED)
-def crear_conductor(conductor: ConductorCrear, bd: Session = Depends(obtener_bd)):
+def crear_conductor(conductor: ConductorCrear, bd: Session = Depends(obtener_bd), _: Usuario = Depends(requerir_superadmin)):
     return servicio_conductor.crear(bd, conductor_crear=conductor)
 
 
 @enrutador.put("/{id_conductor}", response_model=ConductorRespuesta)
-def actualizar_conductor(id_conductor: int, conductor: ConductorActualizar, bd: Session = Depends(obtener_bd)):
+def actualizar_conductor(id_conductor: int, conductor: ConductorActualizar, bd: Session = Depends(obtener_bd), _: Usuario = Depends(requerir_superadmin)):
     return servicio_conductor.actualizar(bd, id_conductor=id_conductor, conductor_actualizar=conductor)
 
 
 @enrutador.delete("/{id_conductor}")
-def eliminar_conductor(id_conductor: int, bd: Session = Depends(obtener_bd)):
+def eliminar_conductor(id_conductor: int, bd: Session = Depends(obtener_bd), _: Usuario = Depends(requerir_superadmin)):
     return servicio_conductor.eliminar(bd, id_conductor=id_conductor)

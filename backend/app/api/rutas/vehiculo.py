@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.esquemas.vehiculo import VehiculoRespuesta, VehiculoCrear, VehiculoActualizar
 from app.servicios import vehiculo as servicio_vehiculo
 from app.dependencias.base_datos import obtener_bd
-from app.dependencias.seguridad import obtener_usuario_actual
+from app.dependencias.seguridad import obtener_usuario_actual, requerir_superadmin
 from app.modelos.usuario import Usuario
 
 enrutador = APIRouter(
@@ -22,13 +22,13 @@ def obtener_vehiculo(id_vehiculo: int, bd: Session = Depends(obtener_bd)):
     return servicio_vehiculo.obtener_por_id(bd, id_vehiculo=id_vehiculo)
 
 @enrutador.post("/", response_model=VehiculoRespuesta, status_code=status.HTTP_201_CREATED)
-def crear_vehiculo(vehiculo: VehiculoCrear, bd: Session = Depends(obtener_bd)):
+def crear_vehiculo(vehiculo: VehiculoCrear, bd: Session = Depends(obtener_bd), _: Usuario = Depends(requerir_superadmin)):
     return servicio_vehiculo.crear(bd, vehiculo_crear=vehiculo)
 
 @enrutador.put("/{id_vehiculo}", response_model=VehiculoRespuesta)
-def actualizar_vehiculo(id_vehiculo: int, vehiculo: VehiculoActualizar, bd: Session = Depends(obtener_bd)):
+def actualizar_vehiculo(id_vehiculo: int, vehiculo: VehiculoActualizar, bd: Session = Depends(obtener_bd), _: Usuario = Depends(requerir_superadmin)):
     return servicio_vehiculo.actualizar(bd, id_vehiculo=id_vehiculo, vehiculo_actualizar=vehiculo)
 
 @enrutador.delete("/{id_vehiculo}")
-def eliminar_vehiculo(id_vehiculo: int, bd: Session = Depends(obtener_bd)):
+def eliminar_vehiculo(id_vehiculo: int, bd: Session = Depends(obtener_bd), _: Usuario = Depends(requerir_superadmin)):
     return servicio_vehiculo.eliminar(bd, id_vehiculo=id_vehiculo)

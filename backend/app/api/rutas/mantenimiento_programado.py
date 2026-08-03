@@ -4,7 +4,8 @@ from sqlalchemy.orm import Session
 from app.esquemas.mantenimiento_programado import MantenimientoProgramadoRespuesta, MantenimientoProgramadoCrear, MantenimientoProgramadoActualizar
 from app.servicios import mantenimiento_programado as servicio_mantenimiento_programado
 from app.dependencias.base_datos import obtener_bd
-from app.dependencias.seguridad import obtener_usuario_actual
+from app.dependencias.seguridad import obtener_usuario_actual, requerir_superadmin
+from app.modelos.usuario import Usuario
 
 enrutador = APIRouter(
     prefix="/mantenimientos-programados",
@@ -21,13 +22,13 @@ def obtener_mantenimiento_programado(id_mantenimiento: int, bd: Session = Depend
     return servicio_mantenimiento_programado.obtener_por_id(bd, id_mantenimiento=id_mantenimiento)
 
 @enrutador.post("/", response_model=MantenimientoProgramadoRespuesta, status_code=status.HTTP_201_CREATED)
-def crear_mantenimiento_programado(mantenimiento: MantenimientoProgramadoCrear, bd: Session = Depends(obtener_bd)):
+def crear_mantenimiento_programado(mantenimiento: MantenimientoProgramadoCrear, bd: Session = Depends(obtener_bd), _: Usuario = Depends(requerir_superadmin)):
     return servicio_mantenimiento_programado.crear(bd, mantenimiento_crear=mantenimiento)
 
 @enrutador.put("/{id_mantenimiento}", response_model=MantenimientoProgramadoRespuesta)
-def actualizar_mantenimiento_programado(id_mantenimiento: int, mantenimiento: MantenimientoProgramadoActualizar, bd: Session = Depends(obtener_bd)):
+def actualizar_mantenimiento_programado(id_mantenimiento: int, mantenimiento: MantenimientoProgramadoActualizar, bd: Session = Depends(obtener_bd), _: Usuario = Depends(requerir_superadmin)):
     return servicio_mantenimiento_programado.actualizar(bd, id_mantenimiento=id_mantenimiento, mantenimiento_actualizar=mantenimiento)
 
 @enrutador.delete("/{id_mantenimiento}")
-def eliminar_mantenimiento_programado(id_mantenimiento: int, bd: Session = Depends(obtener_bd)):
+def eliminar_mantenimiento_programado(id_mantenimiento: int, bd: Session = Depends(obtener_bd), _: Usuario = Depends(requerir_superadmin)):
     return servicio_mantenimiento_programado.eliminar(bd, id_mantenimiento=id_mantenimiento)

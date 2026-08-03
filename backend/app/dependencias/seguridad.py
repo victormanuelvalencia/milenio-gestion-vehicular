@@ -4,7 +4,7 @@ from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 from app.dependencias.base_datos import obtener_bd
 from app.configuracion.config import configuraciones
-from app.modelos.usuario import Usuario
+from app.modelos.usuario import Usuario, RolUsuario
 from app.esquemas.token import DatosToken
 
 esquema_seguridad = HTTPBearer()
@@ -35,4 +35,18 @@ def obtener_usuario_actual(
     if not usuario.activo:
         raise HTTPException(status_code=400, detail="Usuario inactivo")
         
+    return usuario
+
+
+def requerir_superadmin(usuario: Usuario = Depends(obtener_usuario_actual)) -> Usuario:
+    """Dependencia que restringe el acceso exclusivamente a usuarios con rol SUPERADMIN.
+    
+    Lanza HTTP 403 Forbidden si el usuario autenticado no tiene el rol requerido.
+    Usar en endpoints POST, PUT, PATCH y DELETE para proteger operaciones de escritura.
+    """
+    if usuario.rol != RolUsuario.SUPERADMIN:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Acceso denegado. Esta operación requiere el rol SUPERADMIN."
+        )
     return usuario

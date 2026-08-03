@@ -2,7 +2,9 @@
 import { ref, computed, onMounted , watch } from 'vue'
 import { usuariosService } from '@/services/modules'
 import { useAuthStore } from '@/stores/auth'
+import { usePermisos } from '@/composables/usePermisos'
 
+const { puedeEscribir } = usePermisos()
 const authStore = useAuthStore()
 
 const usuarios = ref([])
@@ -166,6 +168,7 @@ const formatearFecha = (fechaStr) => {
     <div class="mb-6 flex justify-between items-center">
       <h2 class="text-2xl font-bold text-gray-800">Administración de Usuarios</h2>
       <button 
+        v-if="puedeEscribir"
         @click="abrirModalCrear" 
         class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center gap-2"
       >
@@ -211,24 +214,35 @@ const formatearFecha = (fechaStr) => {
             </td>
             <td class="px-4 py-3">
               <button 
+                v-if="puedeEscribir"
                 @click="toggleEstado(u)"
                 class="px-2 py-1 rounded text-xs font-medium border transition-colors focus:outline-none"
                 :class="u.activo ? 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100' : 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100'"
               >
                 {{ u.activo ? 'Activo' : 'Inactivo' }}
               </button>
+              <span 
+                v-else
+                class="px-2 py-1 rounded text-xs font-medium border"
+                :class="u.activo ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'"
+              >
+                {{ u.activo ? 'Activo' : 'Inactivo' }}
+              </span>
             </td>
             <td class="px-4 py-3 text-gray-500 text-xs">
               {{ formatearFecha(u.fecha_creacion) }}
             </td>
             <td class="px-4 py-3">
               <div class="flex justify-center gap-3">
-                <button @click="abrirModalEditar(u)" title="Editar" class="text-blue-500 hover:text-blue-700 transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>
-                </button>
-                <button @click="abrirModalEliminar(u)" title="Eliminar" class="text-red-500 hover:text-red-700 transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>
-                </button>
+                <template v-if="puedeEscribir">
+                  <button @click="abrirModalEditar(u)" title="Editar" class="text-blue-500 hover:text-blue-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>
+                  </button>
+                  <button @click="abrirModalEliminar(u)" title="Eliminar" class="text-red-500 hover:text-red-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>
+                  </button>
+                </template>
+                <span v-else class="text-xs text-gray-400 italic">Solo lectura</span>
               </div>
             </td>
           </tr>
@@ -252,7 +266,7 @@ const formatearFecha = (fechaStr) => {
     </div>
 
     <!-- Modal Crear -->
-    <div v-if="modalCrearAbierto" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div v-if="modalCrearAbierto && puedeEscribir" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div class="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-slate-50">
           <h3 class="text-lg font-bold text-gray-800">Crear Nuevo Usuario</h3>
@@ -307,7 +321,7 @@ const formatearFecha = (fechaStr) => {
     </div>
 
     <!-- Modal Editar -->
-    <div v-if="modalEditarAbierto" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div v-if="modalEditarAbierto && puedeEscribir" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div class="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-slate-50">
           <h3 class="text-lg font-bold text-gray-800">Editar Usuario</h3>
@@ -352,7 +366,7 @@ const formatearFecha = (fechaStr) => {
     </div>
 
     <!-- Modal Eliminar -->
-    <div v-if="modalEliminarAbierto" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div v-if="modalEliminarAbierto && puedeEscribir" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div class="bg-white rounded-xl shadow-xl w-full max-w-sm overflow-hidden">
         <div class="p-6 text-center">
           <div class="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">

@@ -4,6 +4,9 @@ import { useRouter } from 'vue-router'
 import { viajesService, vehiculosService, conductoresService } from '@/services/modules'
 import FormularioGasto from '@/components/gastos/FormularioGasto.vue'
 import SearchableSelect from '@/components/common/SearchableSelect.vue'
+import { usePermisos } from '@/composables/usePermisos'
+
+const { puedeEscribir } = usePermisos()
 
 const router = useRouter()
 const viajes = ref([])
@@ -190,6 +193,7 @@ onMounted(cargarDatos)
     <div class="mb-6 flex justify-between items-center">
       <h2 class="text-2xl font-bold text-gray-800">Gestión de Viajes</h2>
       <button
+        v-if="puedeEscribir"
         @click="abrirModalCrear"
         class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 transition-colors shadow-sm"
       >
@@ -259,15 +263,15 @@ onMounted(cargarDatos)
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 14.25l6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0c1.1.128 1.907 1.077 1.907 2.185Z" /></svg>
                   </button>
                   <!-- Crear gasto -->
-                  <button @click="abrirModalGasto(v)" title="Agregar Gasto" class="text-emerald-500 hover:text-emerald-700 transition-colors">
+                  <button v-if="puedeEscribir" @click="abrirModalGasto(v)" title="Agregar Gasto" class="text-emerald-500 hover:text-emerald-700 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                   </button>
                   <!-- Editar -->
-                  <button @click="iniciarEdicion(v)" title="Editar" class="text-blue-500 hover:text-blue-700 transition-colors">
+                  <button v-if="puedeEscribir" @click="iniciarEdicion(v)" title="Editar" class="text-blue-500 hover:text-blue-700 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>
                   </button>
                   <!-- Eliminar -->
-                  <button @click="eliminarViaje(v)" title="Eliminar" class="text-red-500 hover:text-red-700 transition-colors">
+                  <button v-if="puedeEscribir" @click="eliminarViaje(v)" title="Eliminar" class="text-red-500 hover:text-red-700 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>
                   </button>
                 </div>
@@ -275,6 +279,7 @@ onMounted(cargarDatos)
             </tr>
             <!-- Fila de Edición Inline -->
             <tr
+              v-if="puedeEscribir"
               v-for="v in viajesPaginados"
               :key="'edit-' + v.id"
               v-show="editando === v.id"
@@ -318,7 +323,7 @@ onMounted(cargarDatos)
     </div>
 
     <!-- Modal de Creación -->
-    <div v-if="mostrarModalCrear" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+    <div v-if="mostrarModalCrear && puedeEscribir" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
       <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl my-8">
         <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-slate-50 sticky top-0 z-10">
           <h3 class="text-lg font-bold text-gray-800">Registrar Viaje</h3>
@@ -399,7 +404,7 @@ onMounted(cargarDatos)
     </div>
 
     <!-- Modal Agregar Gasto desde Viaje -->
-    <div v-if="mostrarModalGasto" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+    <div v-if="mostrarModalGasto && puedeEscribir" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
       <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl my-8">
         <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-slate-50 sticky top-0 z-10">
           <div>

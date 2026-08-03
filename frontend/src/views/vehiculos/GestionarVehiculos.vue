@@ -1,6 +1,9 @@
 <script setup>
 import { ref, computed, onMounted , watch } from 'vue'
 import { vehiculosService } from '@/services/modules'
+import { usePermisos } from '@/composables/usePermisos'
+
+const { puedeEscribir } = usePermisos()
 
 const vehiculos = ref([])
 const cargando = ref(false)
@@ -118,7 +121,7 @@ onMounted(cargarVehiculos)
   <div>
     <div class="mb-6 flex justify-between items-center">
       <h2 class="text-2xl font-bold text-gray-800">Gestión de Vehículos</h2>
-      <button @click="abrirModalCrear" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 transition-colors shadow-sm">
+      <button v-if="puedeEscribir" @click="abrirModalCrear" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 transition-colors shadow-sm">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" /></svg>
         Nuevo Vehículo
       </button>
@@ -165,20 +168,23 @@ onMounted(cargarVehiculos)
             </td>
             <td class="px-4 py-3">
               <div class="flex items-center justify-center gap-3">
-                <button @click="iniciarEdicion(v)" title="Editar" class="text-blue-500 hover:text-blue-700 transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>
-                </button>
-                <button @click="cambiarEstado(v)" :title="v.estado ? 'Desactivar' : 'Activar'" :class="v.estado ? 'text-orange-500 hover:text-orange-700' : 'text-green-600 hover:text-green-800'" class="transition-colors">
-                  <svg v-if="v.estado" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" /></svg>
-                  <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
-                </button>
-                <button @click="eliminarVehiculo(v)" title="Eliminar" class="text-red-500 hover:text-red-700 transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>
-                </button>
+                <template v-if="puedeEscribir">
+                  <button @click="iniciarEdicion(v)" title="Editar" class="text-blue-500 hover:text-blue-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>
+                  </button>
+                  <button @click="cambiarEstado(v)" :title="v.estado ? 'Desactivar' : 'Activar'" :class="v.estado ? 'text-orange-500 hover:text-orange-700' : 'text-green-600 hover:text-green-800'" class="transition-colors">
+                    <svg v-if="v.estado" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                    <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                  </button>
+                  <button @click="eliminarVehiculo(v)" title="Eliminar" class="text-red-500 hover:text-red-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>
+                  </button>
+                </template>
+                <span v-else class="text-xs text-gray-400 italic">Solo lectura</span>
               </div>
             </td>
           </tr>
-          <tr v-for="v in vehiculosPaginados" :key="'edit-' + v.id" v-show="editando === v.id" class="bg-blue-50 border-l-4 border-blue-500">
+          <tr v-if="puedeEscribir" v-for="v in vehiculosPaginados" :key="'edit-' + v.id" v-show="editando === v.id" class="bg-blue-50 border-l-4 border-blue-500">
             <td class="px-4 py-2"><input v-model="formularioEdicion.placa" class="w-full px-2 py-1.5 border border-blue-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" /></td>
             <td class="px-4 py-2"><input v-model="formularioEdicion.marca" class="w-full px-2 py-1.5 border border-blue-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" /></td>
             <td class="px-4 py-2"><input v-model.number="formularioEdicion.ano" type="number" class="w-full px-2 py-1.5 border border-blue-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" /></td>
@@ -206,8 +212,8 @@ onMounted(cargarVehiculos)
       <span class="ml-2 text-sm text-gray-500">Página {{ paginaActual }} de {{ totalPaginas }} · {{ vehiculosFiltrados.length }} registros</span>
     </div>
 
-    <!-- Modal de Creación -->
-    <div v-if="mostrarModalCrear" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <!-- Modal de Creación (solo SUPERADMIN) -->
+    <div v-if="mostrarModalCrear && puedeEscribir" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div class="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-slate-50">
           <h3 class="text-lg font-bold text-gray-800">Crear Vehículo</h3>
