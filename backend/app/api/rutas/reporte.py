@@ -29,14 +29,24 @@ def gastos_por_mes(anio: int, bd: Session = Depends(obtener_bd)):
     return ServicioReportes.obtener_gastos_por_mes(bd, anio)
 
 
-@enrutador.get("/gastos-por-tipo")
-def gastos_por_tipo(
+@enrutador.get("/utilidad-por-vehiculo")
+def utilidad_por_vehiculo(
     vehiculo_id: Optional[int] = None,
     fecha_inicio: Optional[date] = None,
     fecha_fin: Optional[date] = None,
     bd: Session = Depends(obtener_bd)
 ):
-    return ServicioReportes.obtener_gastos_por_tipo(bd, vehiculo_id, fecha_inicio, fecha_fin)
+    return ServicioReportes.obtener_utilidad_por_vehiculo(bd, vehiculo_id, fecha_inicio, fecha_fin)
+
+
+@enrutador.get("/utilidad-por-periodo")
+def utilidad_por_periodo(
+    vehiculo_id: Optional[int] = None,
+    fecha_inicio: Optional[date] = None,
+    fecha_fin: Optional[date] = None,
+    bd: Session = Depends(obtener_bd)
+):
+    return ServicioReportes.obtener_utilidad_por_vehiculo(bd, vehiculo_id, fecha_inicio, fecha_fin)
 
 
 @enrutador.get("/historial-vehiculo", response_model=List[GastoRespuesta])

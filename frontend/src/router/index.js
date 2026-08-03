@@ -105,9 +105,9 @@ const router = createRouter({
           component: () => import('@/views/reportes/GastosPorMes.vue'),
         },
         {
-          path: 'reportes/gastos-por-tipo',
-          name: 'Reporte Gastos por Tipo',
-          component: () => import('@/views/reportes/GastosPorTipo.vue'),
+          path: 'reportes/utilidad-por-periodo',
+          name: 'Reporte Utilidad por Período',
+          component: () => import('@/views/reportes/UtilidadPorPeriodo.vue'),
         },
         {
           path: 'reportes/historial-vehiculo',

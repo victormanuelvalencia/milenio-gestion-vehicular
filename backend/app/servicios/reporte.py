@@ -5,6 +5,8 @@ from sqlalchemy import func, extract
 
 from app.modelos.gasto import Gasto
 from app.modelos.tipo_gasto import TipoGasto
+from app.modelos.viaje import Viaje
+from app.modelos.vehiculo import Vehiculo
 
 class ServicioReportes:
     @staticmethod
@@ -56,23 +58,45 @@ class ServicioReportes:
         ]
 
     @staticmethod
-    def obtener_gastos_por_tipo(bd: Session, vehiculo_id: Optional[int], fecha_inicio: Optional[date], fecha_fin: Optional[date]):
-        q = bd.query(
-            TipoGasto.nombre,
-            func.count(Gasto.id).label('cantidad'),
-            func.sum(Gasto.valor).label('total')
-        ).join(Gasto, Gasto.tipo_gasto_id == TipoGasto.id)
+    def obtener_utilidad_por_vehiculo(bd: Session, vehiculo_id: Optional[int], fecha_inicio: Optional[date], fecha_fin: Optional[date]):
+        q_vehiculos = bd.query(Vehiculo)
         if vehiculo_id:
-            q = q.filter(Gasto.vehiculo_id == vehiculo_id)
-        if fecha_inicio:
-            q = q.filter(Gasto.fecha >= fecha_inicio)
-        if fecha_fin:
-            q = q.filter(Gasto.fecha <= fecha_fin)
-        resultados = q.group_by(TipoGasto.id, TipoGasto.nombre).order_by(func.sum(Gasto.valor).desc()).all()
-        return [
-            {"tipo_gasto": r.nombre, "cantidad": r.cantidad, "total": float(r.total or 0)}
-            for r in resultados
-        ]
+            q_vehiculos = q_vehiculos.filter(Vehiculo.id == vehiculo_id)
+        
+        vehiculos = q_vehiculos.all()
+        resultados = []
+        
+        for v in vehiculos:
+            # Calcular ingresos (viajes)
+            q_viajes = bd.query(func.sum(Viaje.flete)).filter(Viaje.vehiculo_id == v.id)
+            if fecha_inicio:
+                q_viajes = q_viajes.filter(Viaje.fecha >= fecha_inicio)
+            if fecha_fin:
+                q_viajes = q_viajes.filter(Viaje.fecha <= fecha_fin)
+            
+            ingresos = q_viajes.scalar() or 0.0
+            
+            # Calcular gastos
+            q_gastos = bd.query(func.sum(Gasto.valor)).filter(Gasto.vehiculo_id == v.id)
+            if fecha_inicio:
+                q_gastos = q_gastos.filter(Gasto.fecha >= fecha_inicio)
+            if fecha_fin:
+                q_gastos = q_gastos.filter(Gasto.fecha <= fecha_fin)
+                
+            gastos = q_gastos.scalar() or 0.0
+            
+            utilidad = float(ingresos) - float(gastos)
+            
+            if ingresos > 0 or gastos > 0:
+                resultados.append({
+                    "vehiculo": v.placa,
+                    "ingresos": float(ingresos),
+                    "gastos": float(gastos),
+                    "utilidad": utilidad
+                })
+                
+        resultados.sort(key=lambda x: x["utilidad"], reverse=True)
+        return resultados
 
     @staticmethod
     def obtener_historial_vehiculo(bd: Session, vehiculo_id: Optional[int]):

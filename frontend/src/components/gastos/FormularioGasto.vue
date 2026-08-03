@@ -86,7 +86,7 @@ const getViajeInfo = (id) => {
   if (!id) return '—'
   const v = viajes.value.find(v => v.id === id)
   if (!v) return `ID: ${id}`
-  return `${v.numero_manifiesto} — ${v.origen} → ${v.destino}`
+  return `${v.numero_manifiesto}`
 }
 
 const formatValor = (val) =>
@@ -219,7 +219,7 @@ watch(() => props.fechaInicial, (nuevaFecha) => {
         <div class="grid grid-cols-2 gap-4">
           <!-- Viaje / Manifiesto -->
           <div class="bg-blue-50 border border-blue-100 rounded-lg p-4 col-span-2">
-            <p class="text-xs font-semibold text-blue-400 tracking-wide mb-1">Viaje (Manifiesto)</p>
+            <p class="text-xs font-semibold text-blue-400 tracking-wide mb-1">Manifiesto</p>
             <p class="text-sm font-bold text-blue-800">{{ getViajeInfo(gastoInicial.viaje_id) }}</p>
             <p v-if="gastoInicial.vehiculo_id || gastoInicial.vehiculo" class="text-xs text-blue-600 mt-1">
               <span class="font-semibold">
