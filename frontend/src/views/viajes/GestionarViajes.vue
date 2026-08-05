@@ -17,8 +17,6 @@ const empresas = ref([])
 const cargando = ref(false)
 const error = ref('')
 const mensajeExito = ref('')
-const editando = ref(null)
-const formularioEdicion = ref({})
 
 // Modal agregar gasto desde viaje
 const mostrarModalGasto = ref(false)
@@ -119,30 +117,7 @@ const crearViaje = async () => {
   }
 }
 
-const iniciarEdicion = (v) => {
-  editando.value = v.id
-  formularioEdicion.value = { ...v, fecha: v.fecha || '' }
-}
 
-const cancelarEdicion = () => {
-  editando.value = null
-  formularioEdicion.value = {}
-}
-
-const guardarEdicion = async (id) => {
-  error.value = ''
-  mensajeExito.value = ''
-  try {
-    const datos = { ...formularioEdicion.value }
-    if (!datos.fecha) datos.fecha = null
-    await viajesService.actualizar(id, datos)
-    mensajeExito.value = 'Viaje actualizado correctamente.'
-    editando.value = null
-    await cargarDatos()
-  } catch (e) {
-    error.value = e.response?.data?.detail || 'Error al actualizar el viaje.'
-  }
-}
 
 const eliminarViaje = async (viaje) => {
   if (!confirm(`¿Estás seguro de eliminar el viaje con manifiesto "${viaje.numero_manifiesto}"?`)) return
@@ -159,6 +134,7 @@ const eliminarViaje = async (viaje) => {
 
 const verDetalle = (v) => router.push(`/viajes/${v.id}/detalle`)
 const verGastos = (v) => router.push(`/viajes/${v.id}/gastos`)
+const editarViaje = (v) => router.push(`/viajes/${v.id}/editar`)
 
 const busqueda = ref('')
 const viajesFiltrados = computed(() => {
@@ -246,7 +222,6 @@ onMounted(cargarDatos)
               v-for="v in viajesPaginados"
               :key="v.id"
               class="hover:bg-slate-50 transition-colors"
-              v-show="editando !== v.id"
             >
               <td class="px-3 py-3 font-bold text-gray-800">{{ v.numero_manifiesto }}</td>
               <td class="px-3 py-3 font-medium text-slate-700">{{ v.vehiculo?.placa || '—' }}</td>
@@ -270,7 +245,7 @@ onMounted(cargarDatos)
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                   </button>
                   <!-- Editar -->
-                  <button v-if="puedeEscribir" @click="iniciarEdicion(v)" title="Editar" class="text-blue-500 hover:text-blue-700 transition-colors">
+                  <button v-if="puedeEscribir" @click="editarViaje(v)" title="Editar" class="text-blue-500 hover:text-blue-700 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>
                   </button>
                   <!-- Eliminar -->
@@ -279,37 +254,7 @@ onMounted(cargarDatos)
                   </button>
                 </div>
               </td>
-            </tr>
-            <!-- Fila de Edición Inline -->
-            <tr
-              v-if="puedeEscribir"
-              v-for="v in viajesPaginados"
-              :key="'edit-' + v.id"
-              v-show="editando === v.id"
-              class="bg-blue-50 border-l-4 border-blue-500"
-            >
-              <td class="px-2 py-2"><input v-model="formularioEdicion.numero_manifiesto" class="w-full px-1 py-1 text-xs border rounded" /></td>
-              <td class="px-2 py-2">
-                <SearchableSelect
-                  v-model="formularioEdicion.vehiculo_id"
-                  :options="vehiculos.map(v => ({ value: v.id, label: v.placa }))"
-                />
-              </td>
-              <td class="px-2 py-2"><input v-model.number="formularioEdicion.flete" type="number" class="w-full px-1 py-1 text-xs border rounded" /></td>
-              <td class="px-2 py-2"><input v-model.number="formularioEdicion.anticipo" type="number" class="w-full px-1 py-1 text-xs border rounded" /></td>
-              <td class="px-2 py-2">
-                <SearchableSelect
-                  v-model="formularioEdicion.empresa_id"
-                  :options="empresas.map(e => ({ value: e.id, label: e.nombre }))"
-                />
-              </td>
-              <td class="px-2 py-2">
-                <div class="flex justify-center gap-2">
-                  <button @click="guardarEdicion(v.id)" title="Guardar" class="text-green-600 hover:text-green-800"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg></button>
-                  <button @click="cancelarEdicion" title="Cancelar" class="text-gray-400 hover:text-gray-600"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg></button>
-                </div>
-              </td>
-            </tr>
+               </tr>
           </tbody>
         </table>
       </div>

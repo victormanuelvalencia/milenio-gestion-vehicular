@@ -78,6 +78,11 @@ const router = createRouter({
           component: () => import('@/views/viajes/DetalleViaje.vue'),
         },
         {
+          path: 'viajes/:id/editar',
+          name: 'Editar Viaje',
+          component: () => import('@/views/viajes/EditarViaje.vue'),
+        },
+        {
           path: 'viajes/:id/gastos',
           name: 'Gastos del Viaje',
           component: () => import('@/views/viajes/GastosViaje.vue'),
