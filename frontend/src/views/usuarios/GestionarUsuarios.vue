@@ -158,8 +158,9 @@ const getBadgeColor = (rol) => {
 
 const formatearFecha = (fechaStr) => {
   if (!fechaStr) return '—'
-  const date = new Date(fechaStr)
-  return new Intl.DateTimeFormat('es-CO', { year: 'numeric', month: 'short', day: '2-digit' }).format(date)
+  const dateStr = typeof fechaStr === 'string' ? fechaStr.split('T')[0] : fechaStr
+  const p = dateStr.split('-')
+  return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : fechaStr
 }
 </script>
 

@@ -35,7 +35,9 @@ export const exportarAPDF = (datos, columnas, nombreArchivo, titulo) => {
   doc.text(titulo, 14, 22)
   doc.setFontSize(11)
   doc.setTextColor(100)
-  doc.text(`Generado el: ${new Date().toLocaleDateString('es-CO')}`, 14, 30)
+  const hoy = new Date()
+  const fechaGenerado = `${String(hoy.getDate()).padStart(2, '0')}/${String(hoy.getMonth()+1).padStart(2, '0')}/${hoy.getFullYear()}`
+  doc.text(`Generado el: ${fechaGenerado}`, 14, 30)
 
   const head = [columnas.map(c => c.header)]
   const body = datos.map(fila => {

@@ -92,6 +92,13 @@ const getViajeInfo = (id) => {
 const formatValor = (val) =>
   new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(val)
 
+const formatearFecha = (f) => {
+  if (!f) return '—'
+  const dateStr = typeof f === 'string' ? f.split('T')[0] : f
+  const p = dateStr.split('-')
+  return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : f
+}
+
 const cargarDependencias = async () => {
   try {
     const [rTipos, rProv, rViajes] = await Promise.all([
@@ -234,7 +241,7 @@ watch(() => props.fechaInicial, (nuevaFecha) => {
           </div>
           <div class="bg-slate-50 rounded-lg p-4">
             <p class="text-xs font-semibold text-gray-400 tracking-wide mb-1">Fecha</p>
-            <p class="text-sm font-bold text-gray-800">{{ gastoInicial.fecha }}</p>
+            <p class="text-sm font-bold text-gray-800">{{ formatearFecha(gastoInicial.fecha) }}</p>
           </div>
           <div class="bg-slate-50 rounded-lg p-4">
             <p class="text-xs font-semibold text-gray-400 tracking-wide mb-1">Valor</p>
