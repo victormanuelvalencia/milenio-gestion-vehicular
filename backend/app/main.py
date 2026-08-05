@@ -58,7 +58,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from app.api.rutas import autenticacion, vehiculo, tipo_gasto, proveedor, gasto, reporte, usuario, conductor, viaje, mantenimiento, mantenimiento_programado
+from app.api.rutas import autenticacion, vehiculo, tipo_gasto, proveedor, gasto, reporte, usuario, conductor, viaje, mantenimiento, mantenimiento_programado, empresa
 
 app.include_router(autenticacion.enrutador, prefix="/api/v1")
 app.include_router(vehiculo.enrutador, prefix="/api/v1")
@@ -71,6 +71,7 @@ app.include_router(conductor.enrutador, prefix="/api/v1")
 app.include_router(viaje.enrutador, prefix="/api/v1")
 app.include_router(mantenimiento.enrutador, prefix="/api/v1")
 app.include_router(mantenimiento_programado.enrutador, prefix="/api/v1")
+app.include_router(empresa.enrutador, prefix="/api/v1")
 
 @app.get("/")
 def inicio():

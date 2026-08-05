@@ -133,7 +133,7 @@ const eliminarUsuario = async () => {
   }
 }
 
-const POR_PAGINA = 15
+const POR_PAGINA = 13
 const paginaActual = ref(1)
 const totalPaginas = computed(() => Math.ceil(usuarios.value.length / POR_PAGINA))
 const usuariosPaginados = computed(() => {

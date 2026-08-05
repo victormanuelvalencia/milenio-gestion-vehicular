@@ -8,6 +8,7 @@ from app.modelos.gasto import Gasto
 from app.modelos.tipo_gasto import TipoGasto
 from app.modelos.proveedor import Proveedor
 from app.modelos.conductor import Conductor
+from app.modelos.empresa import Empresa
 from app.modelos.viaje import Viaje
 from app.modelos.mantenimiento import Mantenimiento
 from app.modelos.mantenimiento_programado import MantenimientoProgramado

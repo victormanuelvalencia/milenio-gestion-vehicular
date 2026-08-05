@@ -70,7 +70,7 @@ onMounted(async () => {
           </div>
           <div class="bg-slate-50 rounded-lg p-4">
             <p class="text-xs font-semibold text-gray-400 tracking-wide mb-1">Empresa</p>
-            <p class="text-sm font-bold text-gray-800">{{ viaje.empresa }}</p>
+            <p class="text-sm font-bold text-gray-800">{{ viaje.empresa?.nombre || '—' }}</p>
           </div>
           
           <div class="bg-slate-50 rounded-lg p-4">

@@ -27,7 +27,7 @@ const onGastoCreado = async () => {
 
 const busqueda = ref('')
 
-const POR_PAGINA = 15
+const POR_PAGINA = 13
 const paginaActual = ref(1)
 const gastosFiltrados = computed(() => {
   const q = busqueda.value.toLowerCase().trim()

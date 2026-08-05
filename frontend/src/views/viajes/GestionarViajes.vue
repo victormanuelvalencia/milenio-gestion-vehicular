@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted , watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { viajesService, vehiculosService, conductoresService } from '@/services/modules'
+import { viajesService, vehiculosService, conductoresService, empresasService } from '@/services/modules'
 import FormularioGasto from '@/components/gastos/FormularioGasto.vue'
 import SearchableSelect from '@/components/common/SearchableSelect.vue'
 import { usePermisos } from '@/composables/usePermisos'
@@ -12,6 +12,7 @@ const router = useRouter()
 const viajes = ref([])
 const vehiculos = ref([])
 const conductores = ref([])
+const empresas = ref([])
 
 const cargando = ref(false)
 const error = ref('')
@@ -44,7 +45,7 @@ const errorCrear = ref('')
 const formularioCreacion = ref({
   vehiculo_id: '',
   conductor_id: '',
-  empresa: '',
+  empresa_id: '',
   origen: '',
   destino: '',
   numero_manifiesto: '',
@@ -57,14 +58,16 @@ const cargarDatos = async () => {
   cargando.value = true
   error.value = ''
   try {
-    const [resViajes, resVehiculos, resConductores] = await Promise.all([
+    const [resViajes, resVehiculos, resConductores, resEmpresas] = await Promise.all([
       viajesService.obtenerTodos(),
       vehiculosService.obtenerTodos(),
-      conductoresService.obtenerTodos()
+      conductoresService.obtenerTodos(),
+      empresasService.obtenerTodos()
     ])
     viajes.value = resViajes.data
     vehiculos.value = resVehiculos.data.filter(v => v.estado)
     conductores.value = resConductores.data.filter(c => c.estado)
+    empresas.value = resEmpresas.data
   } catch {
     error.value = 'Error al cargar los datos. Verifica la conexión.'
   } finally {
@@ -84,7 +87,7 @@ const abrirModalCrear = () => {
   formularioCreacion.value = {
     vehiculo_id: '',
     conductor_id: '',
-    empresa: '',
+    empresa_id: '',
     origen: '',
     destino: '',
     numero_manifiesto: '',
@@ -163,14 +166,14 @@ const viajesFiltrados = computed(() => {
   if (!q) return viajes.value
   return viajes.value.filter(v =>
     v.numero_manifiesto?.toLowerCase().includes(q) ||
-    v.empresa?.toLowerCase().includes(q) ||
+    v.empresa?.nombre?.toLowerCase().includes(q) ||
     v.origen?.toLowerCase().includes(q) ||
     v.destino?.toLowerCase().includes(q) ||
     v.vehiculo?.placa?.toLowerCase().includes(q)
   )
 })
 
-const POR_PAGINA = 10
+const POR_PAGINA = 13
 const paginaActual = ref(1)
 const totalPaginas = computed(() => Math.max(1, Math.ceil(viajesFiltrados.value.length / POR_PAGINA)))
 const viajesPaginados = computed(() => {
@@ -294,7 +297,12 @@ onMounted(cargarDatos)
               </td>
               <td class="px-2 py-2"><input v-model.number="formularioEdicion.flete" type="number" class="w-full px-1 py-1 text-xs border rounded" /></td>
               <td class="px-2 py-2"><input v-model.number="formularioEdicion.anticipo" type="number" class="w-full px-1 py-1 text-xs border rounded" /></td>
-              <td class="px-2 py-2"><input v-model="formularioEdicion.fecha" type="date" class="w-full px-1 py-1 text-xs border rounded" /></td>
+              <td class="px-2 py-2">
+                <SearchableSelect
+                  v-model="formularioEdicion.empresa_id"
+                  :options="empresas.map(e => ({ value: e.id, label: e.nombre }))"
+                />
+              </td>
               <td class="px-2 py-2">
                 <div class="flex justify-center gap-2">
                   <button @click="guardarEdicion(v.id)" title="Guardar" class="text-green-600 hover:text-green-800"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg></button>
@@ -349,7 +357,12 @@ onMounted(cargarDatos)
 
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Empresa *</label>
-              <input v-model="formularioCreacion.empresa" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" />
+              <SearchableSelect
+                v-model="formularioCreacion.empresa_id"
+                :options="empresas.map(e => ({ value: e.id, label: e.nombre }))"
+                placeholder="Seleccione..."
+                required
+              />
             </div>
 
             <div>

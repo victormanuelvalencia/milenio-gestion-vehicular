@@ -1,11 +1,11 @@
 <script setup>
-import { ref, computed, onMounted , watch } from 'vue'
-import { tiposGastoService } from '@/services/modules'
+import { ref, computed, onMounted, watch } from 'vue'
+import { empresasService } from '@/services/modules'
 import { usePermisos } from '@/composables/usePermisos'
 
 const { puedeEscribir } = usePermisos()
 
-const tiposGasto = ref([])
+const empresas = ref([])
 const cargando = ref(false)
 const error = ref('')
 const mensajeExito = ref('')
@@ -18,88 +18,88 @@ const creando = ref(false)
 const errorCrear = ref('')
 const formularioCreacion = ref({ nombre: '' })
 
-const cargarTipos = async () => {
+const cargarEmpresas = async () => {
   cargando.value = true; error.value = ''
   try {
-    const res = await tiposGastoService.obtenerTodos()
-    tiposGasto.value = res.data
-  } catch { error.value = 'Error al cargar los tipos de gasto.' }
+    const res = await empresasService.obtenerTodos()
+    empresas.value = res.data
+  } catch { error.value = 'Error al cargar las empresas.' }
   finally { cargando.value = false }
 }
 
 const abrirModalCrear = () => { errorCrear.value = ''; formularioCreacion.value = { nombre: '' }; mostrarModalCrear.value = true }
 const cerrarModalCrear = () => { mostrarModalCrear.value = false }
 
-const crearTipo = async () => {
+const crearEmpresa = async () => {
   errorCrear.value = ''; creando.value = true
   try {
-    await tiposGastoService.crear(formularioCreacion.value)
-    mensajeExito.value = '¡Tipo de gasto creado exitosamente!'
-    cerrarModalCrear(); await cargarTipos()
-  } catch (e) { errorCrear.value = e.response?.data?.detail || 'Error al crear el tipo de gasto.' }
+    await empresasService.crear(formularioCreacion.value)
+    mensajeExito.value = '¡Empresa creada exitosamente!'
+    cerrarModalCrear(); await cargarEmpresas()
+  } catch (e) { errorCrear.value = e.response?.data?.detail || 'Error al crear la empresa.' }
   finally { creando.value = false }
 }
 
-const iniciarEdicion = (t) => { editando.value = t.id; formularioEdicion.value = { ...t } }
+const iniciarEdicion = (e) => { editando.value = e.id; formularioEdicion.value = { ...e } }
 const cancelarEdicion = () => { editando.value = null; formularioEdicion.value = {} }
 
 const guardarEdicion = async (id) => {
   error.value = ''; mensajeExito.value = ''
   try {
-    await tiposGastoService.actualizar(id, formularioEdicion.value)
-    mensajeExito.value = 'Tipo de gasto actualizado correctamente.'
-    editando.value = null; await cargarTipos()
-  } catch (e) { error.value = e.response?.data?.detail || 'Error al actualizar.' }
+    await empresasService.actualizar(id, formularioEdicion.value)
+    mensajeExito.value = 'Empresa actualizada correctamente.'
+    editando.value = null; await cargarEmpresas()
+  } catch (e) { error.value = e.response?.data?.detail || 'Error al actualizar la empresa.' }
 }
 
-const eliminarTipo = async (t) => {
-  if (!confirm(`¿Estás seguro de eliminar el tipo de gasto "${t.nombre}"?`)) return
+const eliminarEmpresa = async (e) => {
+  if (!confirm(`¿Estás seguro de eliminar la empresa "${e.nombre}"?`)) return
   error.value = ''; mensajeExito.value = ''
   try {
-    await tiposGastoService.eliminar(t.id)
-    mensajeExito.value = 'Tipo de gasto eliminado correctamente.'
-    await cargarTipos()
-  } catch (e) { error.value = e.response?.data?.detail || 'Error al eliminar el tipo de gasto.' }
+    await empresasService.eliminar(e.id)
+    mensajeExito.value = 'Empresa eliminada correctamente.'
+    await cargarEmpresas()
+  } catch (err) { error.value = err.response?.data?.detail || 'Error al eliminar la empresa.' }
 }
 
-const tiposFiltrados = computed(() => {
+const empresasFiltradas = computed(() => {
   const q = busqueda.value.toLowerCase().trim()
-  if (!q) return tiposGasto.value
-  return tiposGasto.value.filter(t => t.nombre?.toLowerCase().includes(q))
+  if (!q) return empresas.value
+  return empresas.value.filter(e => e.nombre?.toLowerCase().includes(q))
 })
 
 const POR_PAGINA = 13
 const paginaActual = ref(1)
-const totalPaginas = computed(() => Math.max(1, Math.ceil(tiposFiltrados.value.length / POR_PAGINA)))
-const tiposPaginados = computed(() => {
+const totalPaginas = computed(() => Math.max(1, Math.ceil(empresasFiltradas.value.length / POR_PAGINA)))
+const empresasPaginadas = computed(() => {
   const inicio = (paginaActual.value - 1) * POR_PAGINA
-  return tiposFiltrados.value.slice(inicio, inicio + POR_PAGINA)
+  return empresasFiltradas.value.slice(inicio, inicio + POR_PAGINA)
 })
 const irPagina = (n) => { if (n >= 1 && n <= totalPaginas.value) paginaActual.value = n }
 const resetPagina = () => { paginaActual.value = 1 }
 
-
+watch(busqueda, resetPagina)
 watch(error, (val) => { if (val) setTimeout(() => error.value = '', 3000) })
 watch(mensajeExito, (val) => { if (val) setTimeout(() => mensajeExito.value = '', 3000) })
 watch(errorCrear, (val) => { if (val) setTimeout(() => errorCrear.value = '', 3000) })
 
-onMounted(cargarTipos)
+onMounted(cargarEmpresas)
 </script>
 
 <template>
   <div>
     <div class="mb-6 flex justify-between items-center">
-      <h2 class="text-2xl font-bold text-gray-800">Tipos de Gasto</h2>
+      <h2 class="text-2xl font-bold text-gray-800">Gestión de Empresas</h2>
       <button v-if="puedeEscribir" @click="abrirModalCrear" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 transition-colors shadow-sm">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" /></svg>
-        Nuevo Tipo de Gasto
+        Nueva Empresa
       </button>
     </div>
 
     <!-- Buscador -->
     <div class="mb-4 relative">
       <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
-      <input v-model="busqueda" @input="resetPagina" type="text" placeholder="Buscar por nombre..." class="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-sm" />
+      <input v-model="busqueda" type="text" placeholder="Buscar por nombre..." class="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-sm" />
     </div>
 
     <div v-if="mensajeExito" class="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm flex justify-between">{{ mensajeExito }}<button @click="mensajeExito = ''" class="font-bold">x</button></div>
@@ -115,18 +115,18 @@ onMounted(cargarTipos)
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100">
-          <tr v-if="tiposFiltrados.length === 0">
-            <td colspan="2" class="text-center py-10 text-gray-400">{{ busqueda ? 'Sin resultados para la búsqueda.' : 'No hay tipos de gasto registrados.' }}</td>
+          <tr v-if="empresasFiltradas.length === 0">
+            <td colspan="2" class="text-center py-10 text-gray-400">{{ busqueda ? 'Sin resultados para la búsqueda.' : 'No hay empresas registradas.' }}</td>
           </tr>
-          <tr v-for="t in tiposPaginados" :key="t.id" class="hover:bg-slate-50" v-show="editando !== t.id">
-            <td class="px-4 py-3 font-medium text-gray-800">{{ t.nombre }}</td>
+          <tr v-for="e in empresasPaginadas" :key="e.id" class="hover:bg-slate-50" v-show="editando !== e.id">
+            <td class="px-4 py-3 font-medium text-gray-800">{{ e.nombre }}</td>
             <td class="px-4 py-3">
               <div class="flex items-center justify-center gap-3">
                 <template v-if="puedeEscribir">
-                  <button @click="iniciarEdicion(t)" title="Editar" class="text-blue-500 hover:text-blue-700 transition-colors">
+                  <button @click="iniciarEdicion(e)" title="Editar" class="text-blue-500 hover:text-blue-700 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>
                   </button>
-                  <button @click="eliminarTipo(t)" title="Eliminar" class="text-red-500 hover:text-red-700 transition-colors">
+                  <button @click="eliminarEmpresa(e)" title="Eliminar" class="text-red-500 hover:text-red-700 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>
                   </button>
                 </template>
@@ -134,11 +134,11 @@ onMounted(cargarTipos)
               </div>
             </td>
           </tr>
-          <tr v-if="puedeEscribir" v-for="t in tiposPaginados" :key="'e-' + t.id" v-show="editando === t.id" class="bg-blue-50 border-l-4 border-blue-500">
+          <tr v-if="puedeEscribir" v-for="e in empresasPaginadas" :key="'e-' + e.id" v-show="editando === e.id" class="bg-blue-50 border-l-4 border-blue-500">
             <td class="px-4 py-2"><input v-model="formularioEdicion.nombre" class="w-full px-2 py-1.5 border border-blue-300 rounded-md text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500" /></td>
             <td class="px-4 py-3">
               <div class="flex justify-center gap-3">
-                <button @click="guardarEdicion(t.id)" title="Guardar" class="text-green-600 hover:text-green-800 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg></button>
+                <button @click="guardarEdicion(e.id)" title="Guardar" class="text-green-600 hover:text-green-800 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg></button>
                 <button @click="cancelarEdicion" title="Cancelar" class="text-gray-400 hover:text-gray-600 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg></button>
               </div>
             </td>
@@ -156,22 +156,22 @@ onMounted(cargarTipos)
       <button @click="irPagina(paginaActual + 1)" :disabled="paginaActual === totalPaginas" class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed bg-white border border-gray-200 text-gray-600 hover:bg-slate-50">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
       </button>
-      <span class="ml-2 text-sm text-gray-500">Página {{ paginaActual }} de {{ totalPaginas }} · {{ tiposFiltrados.length }} registros</span>
+      <span class="ml-2 text-sm text-gray-500">Página {{ paginaActual }} de {{ totalPaginas }} · {{ empresasFiltradas.length }} registros</span>
     </div>
 
     <!-- Modal de Creación -->
     <div v-if="mostrarModalCrear && puedeEscribir" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div class="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-slate-50">
-          <h3 class="text-lg font-bold text-gray-800">Crear Tipo de Gasto</h3>
+          <h3 class="text-lg font-bold text-gray-800">Crear Empresa</h3>
           <button @click="cerrarModalCrear" class="text-gray-400 hover:text-gray-600"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
         </div>
-        <form @submit.prevent="crearTipo" class="p-6 space-y-4">
+        <form @submit.prevent="crearEmpresa" class="p-6 space-y-4">
           <div v-if="errorCrear" class="p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">{{ errorCrear }}</div>
-          <div><label class="block text-sm font-medium text-gray-700 mb-1">Nombre *</label><input v-model="formularioCreacion.nombre" required placeholder="ej. Gasolina" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" /></div>
+          <div><label class="block text-sm font-medium text-gray-700 mb-1">Nombre *</label><input v-model="formularioCreacion.nombre" required placeholder="ej. Empresa Transportadora S.A." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" /></div>
           <div class="pt-4 flex justify-end gap-3 border-t border-gray-100 mt-6">
             <button type="button" @click="cerrarModalCrear" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Cancelar</button>
-            <button type="submit" :disabled="creando" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 disabled:opacity-50">{{ creando ? 'Guardando...' : 'Crear Tipo' }}</button>
+            <button type="submit" :disabled="creando" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 disabled:opacity-50">{{ creando ? 'Guardando...' : 'Crear Empresa' }}</button>
           </div>
         </form>
       </div>

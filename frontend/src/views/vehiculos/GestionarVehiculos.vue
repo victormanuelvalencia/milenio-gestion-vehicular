@@ -98,7 +98,7 @@ const vehiculosFiltrados = computed(() => {
   )
 })
 
-const POR_PAGINA = 15
+const POR_PAGINA = 13
 const paginaActual = ref(1)
 const totalPaginas = computed(() => Math.max(1, Math.ceil(vehiculosFiltrados.value.length / POR_PAGINA)))
 const vehiculosPaginados = computed(() => {

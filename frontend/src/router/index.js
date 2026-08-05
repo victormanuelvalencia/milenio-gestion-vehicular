@@ -54,6 +54,12 @@ const router = createRouter({
           name: 'Gestión de Proveedores',
           component: () => import('@/views/proveedores/GestionarProveedores.vue'),
         },
+        // Empresas
+        {
+          path: 'empresas',
+          name: 'Gestión de Empresas',
+          component: () => import('@/views/empresas/GestionarEmpresas.vue'),
+        },
         // Conductores
         {
           path: 'conductores',

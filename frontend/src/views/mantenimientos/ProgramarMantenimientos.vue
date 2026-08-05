@@ -160,7 +160,7 @@ const mantenimientosProgramadosFiltrados = computed(() => {
   )
 })
 
-const POR_PAGINA = 10
+const POR_PAGINA = 13
 const paginaActual = ref(1)
 const totalPaginas = computed(() => Math.max(1, Math.ceil(mantenimientosProgramadosFiltrados.value.length / POR_PAGINA)))
 const mantenimientosPaginados = computed(() => {

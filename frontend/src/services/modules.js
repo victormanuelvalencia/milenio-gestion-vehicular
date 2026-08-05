@@ -18,6 +18,14 @@ export const tiposGastoService = {
   eliminar: (id) => api.delete(`/tipos-gasto/${id}`),
 }
 
+export const empresasService = {
+  obtenerTodos: () => api.get('/empresas'),
+  obtenerPorId: (id) => api.get(`/empresas/${id}`),
+  crear: (datos) => api.post('/empresas', datos),
+  actualizar: (id, datos) => api.put(`/empresas/${id}`, datos),
+  eliminar: (id) => api.delete(`/empresas/${id}`),
+}
+
 export const proveedoresService = {
   obtenerTodos: () => api.get('/proveedores'),
   obtenerPorId: (id) => api.get(`/proveedores/${id}`),

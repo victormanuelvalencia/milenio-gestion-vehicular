@@ -104,7 +104,8 @@ const menuPrincipal = [
   { name: 'Programar mantenimientos', to: '/mantenimientos-programados' },
   { name: 'Gastos', to: '/gastos' },
   { name: 'Tipos de gasto', to: '/tipos-gasto' },
-  { name: 'Proveedores', to: '/proveedores' }
+  { name: 'Proveedores', to: '/proveedores' },
+  { name: 'Empresas', to: '/empresas' },
 ]
 </script>
 

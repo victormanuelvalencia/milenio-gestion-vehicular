@@ -20,9 +20,9 @@ def crear(bd: Session, vehiculo_crear: VehiculoCrear):
         bd.commit()
         bd.refresh(db_vehiculo)
         return db_vehiculo
-    except IntegrityError as e:
-        print(e)
-        raise
+    except IntegrityError:
+        bd.rollback()
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Ya existe un vehículo registrado con esta placa.")
 
 def actualizar(bd: Session, id_vehiculo: int, vehiculo_actualizar: VehiculoActualizar):
     db_vehiculo = obtener_por_id(bd, id_vehiculo)
