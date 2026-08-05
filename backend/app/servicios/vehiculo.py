@@ -21,7 +21,6 @@ def crear(bd: Session, vehiculo_crear: VehiculoCrear):
         bd.refresh(db_vehiculo)
         return db_vehiculo
     except IntegrityError as e:
-        bd.rollback()
         print(e)
         raise
 
