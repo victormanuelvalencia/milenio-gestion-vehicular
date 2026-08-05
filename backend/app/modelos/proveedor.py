@@ -9,7 +9,6 @@ class Proveedor(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     nombre: Mapped[str] = mapped_column(String(150))
     nit: Mapped[str] = mapped_column(String(50), unique=True, index=True)
-    estado: Mapped[bool] = mapped_column(Boolean, default=True)
 
     # Relaciones
     gastos: Mapped[List["Gasto"]] = relationship(back_populates="proveedor")
