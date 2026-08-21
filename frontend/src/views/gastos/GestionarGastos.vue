@@ -25,6 +25,68 @@ const onGastoCreado = async () => {
   await cargarDatos()
 }
 
+// Lógica de modal Factura (DIAN)
+const mostrarModalFactura = ref(false)
+const gastoSeleccionadoDian = ref(null)
+const facturaInput = ref('')
+
+const actualizarVerificacion = async (g) => {
+  if (g.verificado_dian) {
+    // Si se acaba de marcar, prevenir el check visual temporalmente y abrir modal
+    g.verificado_dian = false 
+    gastoSeleccionadoDian.value = g
+    facturaInput.value = g.factura || '' // precargar si ya tuviera algo
+    mostrarModalFactura.value = true
+  } else {
+    // Si se acaba de desmarcar, solo actualizar a false, no borrar la factura
+    try {
+      cargando.value = true
+      await gastosService.actualizar(g.id, { verificado_dian: false })
+      mensajeExito.value = 'Estado DIAN removido correctamente.'
+    } catch (err) {
+      error.value = 'Error al actualizar el estado de verificación.'
+      g.verificado_dian = true // revertir en caso de error
+    } finally {
+      cargando.value = false
+    }
+  }
+}
+
+const cancelarDian = () => {
+  mostrarModalFactura.value = false
+  gastoSeleccionadoDian.value = null
+  facturaInput.value = ''
+}
+
+const omitirDian = async () => {
+  await procesarDian(null)
+}
+
+const guardarDian = async () => {
+  await procesarDian(facturaInput.value.trim() || null)
+}
+
+const procesarDian = async (facturaValor) => {
+  const g = gastoSeleccionadoDian.value
+  if (!g) return
+  
+  try {
+    cargando.value = true
+    await gastosService.actualizar(g.id, { 
+      verificado_dian: true, 
+      factura: facturaValor 
+    })
+    g.verificado_dian = true
+    g.factura = facturaValor
+    mensajeExito.value = 'Gasto verificado exitosamente.'
+  } catch (err) {
+    error.value = 'Error al actualizar el gasto.'
+  } finally {
+    cargando.value = false
+    cancelarDian()
+  }
+}
+
 const busqueda = ref('')
 
 const POR_PAGINA = 13
@@ -105,14 +167,7 @@ const eliminarGasto = async (g) => {
   }
 }
 
-const actualizarVerificacion = async (g) => {
-  try {
-    await gastosService.actualizar(g.id, { verificado_dian: g.verificado_dian })
-  } catch (err) {
-    error.value = 'Error al actualizar el estado de verificación.'
-    g.verificado_dian = !g.verificado_dian // revertir en caso de error
-  }
-}
+// Función actualizarVerificacion movida arriba
 
 
 watch(error, (val) => { if (val) setTimeout(() => error.value = '', 3000) })
@@ -159,6 +214,7 @@ onMounted(cargarDatos)
             <th class="px-4 py-3 w-[10%]">Vehículo</th>
             <th class="px-4 py-3 w-[10%]">Gasto</th>
             <th class="px-4 py-3 w-[15%]">Proveedor</th>
+            <th class="px-4 py-3 w-[10%]">Factura</th>
             <th class="px-4 py-3 w-[10%]">Valor</th>
             <th class="px-4 py-3 w-[15%]">Observaciones</th>
             <th class="px-4 py-3 w-[8%]">Verificado</th>
@@ -174,6 +230,7 @@ onMounted(cargarDatos)
             <td class="px-4 py-3 font-bold text-gray-800">{{ getNombreVehiculo(g.vehiculo_id) }}</td>
             <td class="px-4 py-3 text-gray-700">{{ getNombreTipo(g.tipo_gasto_id) }}</td>
             <td class="px-4 py-3 text-gray-600">{{ g.proveedor_manual || getNombreProveedor(g.proveedor_id) }}</td>
+            <td class="px-4 py-3 text-gray-600 font-medium">{{ g.factura || '—' }}</td>
             <td class="px-4 py-3 font-semibold text-gray-800">{{ formatValor(g.valor) }}</td>
             <td class="px-4 py-3 text-gray-500 max-w-xs truncate">{{ g.observaciones || '—' }}</td>
             <td class="px-4 py-3 text-center">
@@ -237,6 +294,50 @@ onMounted(cargarDatos)
         </div>
         <div class="p-6 max-h-[80vh] overflow-y-auto">
           <FormularioGasto modo="crear" :enModal="true" @guardado="onGastoCreado" @cancelado="cerrarModalCrear" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Registrar Factura DIAN -->
+    <div v-if="mostrarModalFactura" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 bg-slate-50">
+          <h3 class="text-lg font-bold text-gray-800">Registrar factura</h3>
+          <p class="text-xs text-gray-500 mt-1">Gasto: {{ formatValor(gastoSeleccionadoDian?.valor) }}</p>
+        </div>
+        <div class="p-6">
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Número de factura</label>
+          <input 
+            v-model="facturaInput" 
+            type="text" 
+            placeholder="Ej. FAC-12345" 
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
+            @keyup.enter="guardarDian"
+          />
+          <div class="flex gap-3 justify-end">
+            <button 
+              @click="cancelarDian" 
+              class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-lg transition-colors text-sm"
+              :disabled="cargando"
+            >
+              Cancelar
+            </button>
+            <button 
+              @click="omitirDian" 
+              class="px-4 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 font-bold rounded-lg transition-colors text-sm"
+              :disabled="cargando"
+            >
+              Omitir
+            </button>
+            <button 
+              @click="guardarDian" 
+              class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors text-sm flex items-center gap-2"
+              :disabled="cargando"
+            >
+              <svg v-if="cargando" class="w-4 h-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+              Guardar
+            </button>
+          </div>
         </div>
       </div>
     </div>

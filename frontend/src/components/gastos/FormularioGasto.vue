@@ -68,6 +68,7 @@ const formulario = ref({
   tipo_gasto_id: '',
   proveedor_id: null,
   proveedor_manual: '',
+  factura: '',
   observaciones: '',
 })
 
@@ -133,6 +134,7 @@ const formularioVacio = () => ({
   tipo_gasto_id: '',
   proveedor_id: null,
   proveedor_manual: '',
+  factura: '',
   observaciones: '',
 })
 
@@ -149,6 +151,10 @@ const handleSubmit = async () => {
     datos.proveedor_id = null
   } else {
     datos.proveedor_manual = ''
+  }
+  
+  if (!datos.factura) {
+    datos.factura = null
   }
 
   try {
@@ -252,6 +258,10 @@ watch(() => props.fechaInicial, (nuevaFecha) => {
             <p class="text-sm font-bold text-gray-800">
               {{ gastoInicial.proveedor_manual || getNombreProveedor(gastoInicial.proveedor_id) }}
             </p>
+          </div>
+          <div class="bg-slate-50 rounded-lg p-4">
+            <p class="text-xs font-semibold text-gray-400 tracking-wide mb-1">Factura</p>
+            <p class="text-sm font-bold text-gray-800">{{ gastoInicial.factura || '—' }}</p>
           </div>
           <div v-if="gastoInicial.observaciones" class="bg-slate-50 rounded-lg p-4 col-span-2">
             <p class="text-xs font-semibold text-gray-400 tracking-wide mb-1">Observaciones</p>
@@ -367,9 +377,15 @@ watch(() => props.fechaInicial, (nuevaFecha) => {
           />
         </div>
 
-        <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-1">Observaciones</label>
-          <textarea v-model="formulario.observaciones" rows="3" :readonly="esReadOnly" placeholder="Detalles adicionales..." class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none read-only:bg-gray-50 read-only:text-gray-500"></textarea>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Número de Factura</label>
+            <input type="text" v-model="formulario.factura" :readonly="esReadOnly" placeholder="Ej. FAC-12345 (Opcional)" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 read-only:bg-gray-50 read-only:text-gray-500" />
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Observaciones</label>
+            <textarea v-model="formulario.observaciones" rows="1" :readonly="esReadOnly" placeholder="Detalles adicionales..." class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none read-only:bg-gray-50 read-only:text-gray-500"></textarea>
+          </div>
         </div>
 
         <div v-if="!esReadOnly" class="flex gap-3 pt-2">

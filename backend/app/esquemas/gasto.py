@@ -12,6 +12,7 @@ class GastoBase(BaseModel):
     proveedor_manual: Optional[str] = None
     observaciones: Optional[str] = None
     verificado_dian: Optional[bool] = False
+    factura: Optional[str] = None
     viaje_id: Optional[int] = None
 
 class GastoCrear(GastoBase):
@@ -25,6 +26,7 @@ class GastoMasivoItem(BaseModel):
     proveedor_id: Optional[int] = None
     proveedor_manual: Optional[str] = None
     observaciones: Optional[str] = None
+    factura: Optional[str] = None
 
     @field_validator('valor')
     @classmethod
@@ -47,6 +49,7 @@ class GastoActualizar(BaseModel):
     proveedor_manual: Optional[str] = None
     observaciones: Optional[str] = None
     verificado_dian: Optional[bool] = None
+    factura: Optional[str] = None
     viaje_id: Optional[int] = None
 
 from app.esquemas.vehiculo import VehiculoRespuesta

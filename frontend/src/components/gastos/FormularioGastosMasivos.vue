@@ -260,56 +260,57 @@ onMounted(async () => {
           </tr>
         </tbody>
       </table>
-    <!-- ── Botón Agregar Fila ── -->
-    <button type="button" class="btn-agregar" @click="agregarFila">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-      </svg>
-      Agregar otro gasto
-    </button>
-
-    <!-- ── Info Alert ── -->
-    <div class="info-alert">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clip-rule="evenodd" />
-      </svg>
-      El número de manifiesto y la fecha se asignarán automáticamente a cada gasto.
-    </div>
-
-    <!-- ── Resumen total ── -->
-    <div class="resumen">
-      <div class="resumen__item">
-        <p class="resumen__label">Cantidad de gastos</p>
-        <p class="resumen__valor resumen__valor--cantidad">{{ cantidadGastos }}</p>
-      </div>
-      <div class="resumen__item resumen__item--right">
-        <p class="resumen__label">Total de gastos (COP)</p>
-        <p class="resumen__valor resumen__valor--monto">{{ formatMoneda(totalGastos) }}</p>
-      </div>
-    </div>
-
-    <!-- ── Botones ── -->
-    <div class="acciones">
-      <button
-        type="button"
-        class="btn-cancelar"
-        @click="$emit('cancelado')"
-        :disabled="cargando"
-      >
-        Cancelar
-      </button>
-      <button
-        type="button"
-        class="btn-registrar"
-        :disabled="cargando"
-        @click="handleSubmit"
-      >
-        <svg v-if="cargando" class="btn-registrar__spinner" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+      <!-- ── Botón Agregar Fila ── -->
+      <button type="button" class="btn-agregar" @click="agregarFila">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
-        {{ cargando ? 'Guardando...' : textoBoton }}
+        Agregar otro gasto
       </button>
+
+      <!-- ── Info Alert ── -->
+      <div class="info-alert">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clip-rule="evenodd" />
+        </svg>
+        El número de manifiesto y la fecha se asignarán automáticamente a cada gasto.
+      </div>
+
+      <!-- ── Resumen total ── -->
+      <div class="resumen">
+        <div class="resumen__item">
+          <p class="resumen__label">Cantidad de gastos</p>
+          <p class="resumen__valor resumen__valor--cantidad">{{ cantidadGastos }}</p>
+        </div>
+        <div class="resumen__item resumen__item--right">
+          <p class="resumen__label">Total de gastos (COP)</p>
+          <p class="resumen__valor resumen__valor--monto">{{ formatMoneda(totalGastos) }}</p>
+        </div>
+      </div>
+
+      <!-- ── Botones ── -->
+      <div class="acciones">
+        <button
+          type="button"
+          class="btn-cancelar"
+          @click="$emit('cancelado')"
+          :disabled="cargando"
+        >
+          Cancelar
+        </button>
+        <button
+          type="button"
+          class="btn-registrar"
+          :disabled="cargando"
+          @click="handleSubmit"
+        >
+          <svg v-if="cargando" class="btn-registrar__spinner" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+          </svg>
+          {{ cargando ? 'Guardando...' : textoBoton }}
+        </button>
+      </div>
     </div>
   </div>
 </template>

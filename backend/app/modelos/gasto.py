@@ -20,6 +20,7 @@ class Gasto(Base):
     proveedor_manual: Mapped[Optional[str]] = mapped_column(String(150), nullable=True)
     observaciones: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     verificado_dian: Mapped[bool] = mapped_column(default=False)
+    factura: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     viaje_id: Mapped[Optional[int]] = mapped_column(ForeignKey("viajes.id", ondelete="SET NULL"), nullable=True)
 
     # Relaciones
