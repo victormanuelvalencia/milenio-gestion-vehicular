@@ -2,7 +2,7 @@
 import { ref, computed, onMounted , watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { viajesService, vehiculosService, conductoresService, empresasService } from '@/services/modules'
-import FormularioGasto from '@/components/gastos/FormularioGasto.vue'
+import FormularioGastosMasivos from '@/components/gastos/FormularioGastosMasivos.vue'
 import SearchableSelect from '@/components/common/SearchableSelect.vue'
 import { usePermisos } from '@/composables/usePermisos'
 
@@ -30,10 +30,24 @@ const cerrarModalGasto = () => {
   mostrarModalGasto.value = false
   viajeParaGasto.value = null
 }
-const onGastoGuardado = async () => {
-  mensajeExito.value = 'Gasto registrado y asociado al viaje correctamente.'
+const onGastoGuardado = async (gastosCreados) => {
+  const n = gastosCreados?.length || 0
+  mensajeExito.value = `${n} ${n === 1 ? 'gasto registrado' : 'gastos registrados'} correctamente.`
+  // Capturar referencia al viaje ANTES de cerrar el modal (cerrarModalGasto la pone en null)
+  const viajeActualizado = viajeParaGasto.value
   cerrarModalGasto()
-  await cargarDatos()
+  // Actualizar el viaje afectado en la lista local para refrescar la utilidad sin recargar
+  if (viajeActualizado && gastosCreados?.length) {
+    const viajeIndex = viajes.value.findIndex(v => v.id === viajeActualizado.id)
+    if (viajeIndex !== -1) {
+      const viajeActual = viajes.value[viajeIndex]
+      const gastosExistentes = viajeActual.gastos || []
+      viajes.value[viajeIndex] = {
+        ...viajeActual,
+        gastos: [...gastosExistentes, ...gastosCreados],
+      }
+    }
+  }
 }
 
 // Creación
@@ -361,12 +375,12 @@ onMounted(cargarDatos)
       </div>
     </div>
 
-    <!-- Modal Agregar Gasto desde Viaje -->
+    <!-- Modal Agregar Gastos desde Viaje -->
     <div v-if="mostrarModalGasto && puedeEscribir" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl my-8">
+      <div class="bg-white rounded-xl shadow-xl w-full max-w-4xl my-8">
         <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-slate-50 sticky top-0 z-10">
           <div>
-            <h3 class="text-lg font-bold text-gray-800">Agregar Gasto al Viaje</h3>
+            <h3 class="text-lg font-bold text-gray-800">Agregar gastos al viaje</h3>
             <p class="text-xs text-gray-500 mt-0.5">
               Manifiesto: <span class="font-semibold text-blue-600">{{ viajeParaGasto?.numero_manifiesto }}</span>
               · {{ viajeParaGasto?.origen }} → {{ viajeParaGasto?.destino }}
@@ -376,14 +390,11 @@ onMounted(cargarDatos)
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
           </button>
         </div>
-        <div class="p-4 overflow-y-auto max-h-[75vh]">
-          <FormularioGasto
+        <div class="p-5 overflow-y-auto max-h-[78vh]">
+          <FormularioGastosMasivos
             v-if="viajeParaGasto"
-            modo="crear"
+            :viaje="viajeParaGasto"
             :enModal="true"
-            :viajeIdInicial="viajeParaGasto.id"
-            :numeroManifiestoInicial="viajeParaGasto.numero_manifiesto"
-            :fechaInicial="viajeParaGasto.fecha"
             @guardado="onGastoGuardado"
             @cancelado="cerrarModalGasto"
           />

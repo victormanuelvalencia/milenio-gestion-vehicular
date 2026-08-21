@@ -1,7 +1,8 @@
+from typing import List
 from sqlalchemy.orm import Session
 from app.modelos.gasto import Gasto
 from app.modelos.viaje import Viaje
-from app.esquemas.gasto import GastoCrear, GastoActualizar
+from app.esquemas.gasto import GastoCrear, GastoActualizar, GastoMasivoItem
 from fastapi import HTTPException, status
 
 
@@ -94,3 +95,58 @@ def eliminar(bd: Session, id_gasto: int):
     bd.delete(db_gasto)
     bd.commit()
     return {"mensaje": "Gasto eliminado exitosamente"}
+
+
+def crear_masivo(bd: Session, viaje_id: int, gastos_crear: List[GastoMasivoItem]) -> List[Gasto]:
+    """
+    Registra múltiples gastos asociados a un mismo viaje en una única transacción.
+    Si falla cualquier gasto, se hace rollback de toda la operación.
+    """
+    if not gastos_crear:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Debe incluir al menos un gasto para registrar"
+        )
+
+    # Verificar que el viaje existe y obtener sus datos
+    viaje = bd.query(Viaje).filter(Viaje.id == viaje_id).first()
+    if not viaje:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="El viaje especificado no existe"
+        )
+
+    gastos_creados = []
+    try:
+        for item in gastos_crear:
+            datos = {
+                "viaje_id": viaje_id,
+                "vehiculo_id": viaje.vehiculo_id,
+                "fecha": viaje.fecha,
+                "tipo_gasto_id": item.tipo_gasto_id,
+                "valor": item.valor,
+                "proveedor_id": item.proveedor_id,
+                "proveedor_manual": item.proveedor_manual,
+                "observaciones": item.observaciones,
+                "verificado_dian": False,
+            }
+            db_gasto = Gasto(**datos)
+            bd.add(db_gasto)
+            gastos_creados.append(db_gasto)
+
+        bd.commit()
+
+        for g in gastos_creados:
+            bd.refresh(g)
+
+        return gastos_creados
+
+    except HTTPException:
+        bd.rollback()
+        raise
+    except Exception as e:
+        bd.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error al registrar los gastos. No se guardó ningún gasto."
+        ) from e

@@ -1,5 +1,5 @@
-from pydantic import BaseModel, ConfigDict
-from typing import Optional
+from pydantic import BaseModel, ConfigDict, field_validator
+from typing import Optional, List
 from datetime import date
 from decimal import Decimal
 
@@ -16,6 +16,27 @@ class GastoBase(BaseModel):
 
 class GastoCrear(GastoBase):
     pass
+
+
+class GastoMasivoItem(BaseModel):
+    """Un gasto individual dentro de una operación de registro masivo."""
+    tipo_gasto_id: int
+    valor: float
+    proveedor_id: Optional[int] = None
+    proveedor_manual: Optional[str] = None
+    observaciones: Optional[str] = None
+
+    @field_validator('valor')
+    @classmethod
+    def valor_positivo(cls, v):
+        if v <= 0:
+            raise ValueError('El valor del gasto debe ser mayor que cero')
+        return v
+
+
+class GastosMasivosCrear(BaseModel):
+    """Payload para registrar múltiples gastos asociados a un mismo viaje."""
+    gastos: List[GastoMasivoItem]
 
 class GastoActualizar(BaseModel):
     fecha: Optional[date] = None

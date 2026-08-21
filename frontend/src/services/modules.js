@@ -54,6 +54,7 @@ export const viajesService = {
   obtenerTodos: () => api.get('/viajes'),
   obtenerPorId: (id) => api.get(`/viajes/${id}`),
   obtenerGastos: (id) => api.get(`/viajes/${id}/gastos`),
+  crearGastosMasivos: (id, datos) => api.post(`/viajes/${id}/gastos/masivos`, datos),
   crear: (datos) => api.post('/viajes', datos),
   actualizar: (id, datos) => api.put(`/viajes/${id}`, datos),
   eliminar: (id) => api.delete(`/viajes/${id}`),

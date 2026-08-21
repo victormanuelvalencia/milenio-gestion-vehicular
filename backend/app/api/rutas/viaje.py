@@ -2,7 +2,7 @@ from typing import List
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 from app.esquemas.viaje import ViajeRespuesta, ViajeCrear, ViajeActualizar
-from app.esquemas.gasto import GastoRespuesta
+from app.esquemas.gasto import GastoRespuesta, GastosMasivosCrear
 from app.servicios import viaje as servicio_viaje
 from app.servicios import gasto as servicio_gasto
 from app.dependencias.base_datos import obtener_bd
@@ -31,6 +31,20 @@ def obtener_gastos_de_viaje(id_viaje: int, bd: Session = Depends(obtener_bd)):
     """Retorna todos los gastos asociados a un viaje específico."""
     servicio_viaje.obtener_por_id(bd, id_viaje=id_viaje)  # valida existencia
     return servicio_gasto.obtener_por_viaje(bd, id_viaje=id_viaje)
+
+
+@enrutador.post("/{viaje_id}/gastos/masivos", response_model=List[GastoRespuesta], status_code=status.HTTP_201_CREATED)
+def crear_gastos_masivos(
+    viaje_id: int,
+    datos: GastosMasivosCrear,
+    bd: Session = Depends(obtener_bd),
+    _: Usuario = Depends(requerir_superadmin)
+):
+    """
+    Registra múltiples gastos asociados a un viaje en una sola operación transaccional.
+    Si alguno falla, se hace rollback de toda la operación.
+    """
+    return servicio_gasto.crear_masivo(bd, viaje_id=viaje_id, gastos_crear=datos.gastos)
 
 
 @enrutador.post("/", response_model=ViajeRespuesta, status_code=status.HTTP_201_CREATED)
