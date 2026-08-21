@@ -57,8 +57,6 @@ const cargarDatos = async () => {
   }
 }
 
-}
-
 const editarGasto = (g) => router.push(`/gastos/${g.id}/editar`)
 
 const eliminarGasto = async (g) => {
