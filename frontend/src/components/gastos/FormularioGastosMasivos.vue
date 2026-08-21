@@ -141,28 +141,6 @@ onMounted(async () => {
 
 <template>
   <div class="formulario-masivo">
-    <!-- ── Encabezado del viaje (solo lectura) ── -->
-    <div class="viaje-header">
-      <div class="viaje-header__icon">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 14.25l6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0c1.1.128 1.907 1.077 1.907 2.185Z" />
-        </svg>
-      </div>
-      <div class="viaje-header__info">
-        <p class="viaje-header__titulo">Manifiesto: {{ viaje.numero_manifiesto }}</p>
-        <p class="viaje-header__ruta">{{ viaje.origen }} → {{ viaje.destino }}</p>
-      </div>
-      <div class="viaje-header__fields">
-        <div class="viaje-field">
-          <label class="viaje-field__label">Número de manifiesto</label>
-          <input :value="viaje.numero_manifiesto" readonly class="viaje-field__input" />
-        </div>
-        <div class="viaje-field">
-          <label class="viaje-field__label">Fecha del viaje</label>
-          <input :value="formatearFecha(viaje.fecha)" readonly class="viaje-field__input" />
-        </div>
-      </div>
-    </div>
 
     <!-- ── Mensaje de error global ── -->
     <div v-if="error" class="alerta-error">
@@ -174,13 +152,8 @@ onMounted(async () => {
 
     <!-- ── Título sección de gastos ── -->
     <div class="seccion-titulo">
-      <h3 class="seccion-titulo__texto">Gastos del viaje</h3>
-      <button type="button" class="btn-agregar" @click="agregarFila">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-        </svg>
-        Agregar otro gasto
-      </button>
+      <h3 class="seccion-titulo__texto">Gastos del Viaje</h3>
+      <p class="seccion-titulo__subtexto">Agrega todos los gastos asociados a este viaje y regístralos en una sola operación.</p>
     </div>
 
     <!-- ── Tabla de gastos ── -->
@@ -287,6 +260,20 @@ onMounted(async () => {
           </tr>
         </tbody>
       </table>
+    <!-- ── Botón Agregar Fila ── -->
+    <button type="button" class="btn-agregar" @click="agregarFila">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+      </svg>
+      Agregar otro gasto
+    </button>
+
+    <!-- ── Info Alert ── -->
+    <div class="info-alert">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clip-rule="evenodd" />
+      </svg>
+      El número de manifiesto y la fecha se asignarán automáticamente a cada gasto.
     </div>
 
     <!-- ── Resumen total ── -->
@@ -295,8 +282,7 @@ onMounted(async () => {
         <p class="resumen__label">Cantidad de gastos</p>
         <p class="resumen__valor resumen__valor--cantidad">{{ cantidadGastos }}</p>
       </div>
-      <div class="resumen__separador"></div>
-      <div class="resumen__item resumen__item--total">
+      <div class="resumen__item resumen__item--right">
         <p class="resumen__label">Total de gastos (COP)</p>
         <p class="resumen__valor resumen__valor--monto">{{ formatMoneda(totalGastos) }}</p>
       </div>
@@ -336,122 +322,65 @@ onMounted(async () => {
   font-family: inherit;
 }
 
-/* ── Encabezado del viaje ── */
-.viaje-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
-  border-radius: 10px;
-  padding: 14px 16px;
-  flex-wrap: wrap;
-}
-
-.viaje-header__icon {
-  flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  background: #2563eb;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-}
-
-.viaje-header__icon svg { width: 18px; height: 18px; }
-
-.viaje-header__info { flex: 1; min-width: 120px; }
-
-.viaje-header__titulo {
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: #1e40af;
-  margin: 0 0 2px 0;
-}
-
-.viaje-header__ruta {
-  font-size: 0.75rem;
-  color: #3b82f6;
-  margin: 0;
-}
-
-.viaje-header__fields {
-  display: flex;
-  gap: 10px;
-  flex-shrink: 0;
-  flex-wrap: wrap;
-}
-
-.viaje-field { display: flex; flex-direction: column; gap: 3px; }
-
-.viaje-field__label {
-  font-size: 0.65rem;
-  font-weight: 600;
-  color: #6b7280;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.viaje-field__input {
-  width: 130px;
-  padding: 5px 8px;
-  border: 1px solid #bfdbfe;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #1e40af;
-  background: #fff;
-  cursor: not-allowed;
-}
-
-/* ── Alerta de error ── */
-.alerta-error {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  border-radius: 8px;
-  font-size: 0.8rem;
-  color: #dc2626;
-}
-
-.alerta-error__icono { width: 16px; height: 16px; flex-shrink: 0; }
-
 /* ── Título de sección ── */
 .seccion-titulo {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .seccion-titulo__texto {
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 700;
   color: #1f2937;
+  margin: 0;
+}
+
+.seccion-titulo__subtexto {
+  font-size: 0.8rem;
+  color: #6b7280;
   margin: 0;
 }
 
 .btn-agregar {
   display: flex;
   align-items: center;
-  gap: 5px;
-  padding: 6px 12px;
-  background: #f0f9ff;
-  border: 1px solid #bae6fd;
-  border-radius: 7px;
-  font-size: 0.78rem;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  width: 100%;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.85rem;
   font-weight: 600;
-  color: #0284c7;
+  color: #3b82f6;
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
+  transition: all 0.15s;
 }
 
-.btn-agregar:hover { background: #e0f2fe; border-color: #7dd3fc; }
-.btn-agregar svg { width: 13px; height: 13px; }
+.btn-agregar:hover { background: #f1f5f9; border-color: #94a3b8; color: #2563eb; }
+.btn-agregar svg { width: 16px; height: 16px; }
+
+/* ── Info Alert ── */
+.info-alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  color: #1e40af;
+}
+
+.info-alert svg {
+  width: 18px;
+  height: 18px;
+  color: #3b82f6;
+  flex-shrink: 0;
+}
 
 /* ── Tabla de gastos ── */
 .tabla-gastos-wrapper {
@@ -571,45 +500,44 @@ onMounted(async () => {
 /* ── Resumen ── */
 .resumen {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  background: #f8fafc;
+  background: #fff;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
-  overflow: hidden;
+  padding: 16px 24px;
 }
 
-.resumen__item { flex: 1; padding: 14px 20px; text-align: center; }
-.resumen__item--total { background: #eff6ff; }
-.resumen__separador { width: 1px; background: #e2e8f0; align-self: stretch; }
+.resumen__item { display: flex; flex-direction: column; }
+.resumen__item--right { text-align: right; align-items: flex-end; }
 
 .resumen__label {
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  color: #6b7280;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  color: #475569;
   margin: 0 0 4px 0;
 }
 
-.resumen__valor { font-size: 1.25rem; font-weight: 800; margin: 0; }
-.resumen__valor--cantidad { color: #1f2937; }
-.resumen__valor--monto { color: #1d4ed8; }
+.resumen__valor { font-size: 1.5rem; font-weight: 800; margin: 0; }
+.resumen__valor--cantidad { color: #3b82f6; }
+.resumen__valor--monto { color: #2563eb; }
 
 /* ── Botones de acción ── */
 .acciones {
   display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  padding-top: 4px;
-  border-top: 1px solid #f1f5f9;
+  gap: 12px;
+  justify-content: space-between;
+  padding-top: 12px;
 }
 
 .btn-cancelar {
-  padding: 9px 20px;
+  flex: 1;
+  max-width: 30%;
+  padding: 12px;
   background: #f1f5f9;
-  border: 1px solid #e2e8f0;
+  border: none;
   border-radius: 8px;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: #475569;
   cursor: pointer;
@@ -620,19 +548,20 @@ onMounted(async () => {
 .btn-cancelar:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .btn-registrar {
+  flex: 2;
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 7px;
-  padding: 9px 22px;
+  gap: 8px;
+  padding: 12px;
   background: #2563eb;
   border: none;
   border-radius: 8px;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: #fff;
   cursor: pointer;
   transition: background 0.15s, box-shadow 0.15s;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
 }
 
 .btn-registrar:hover:not(:disabled) {
