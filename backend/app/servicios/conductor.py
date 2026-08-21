@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 
 
 def obtener_todos(bd: Session, skip: int = 0, limit: int = 1000):
-    return bd.query(Conductor).offset(skip).limit(limit).all()
+    return bd.query(Conductor).order_by(Conductor.id.desc()).offset(skip).limit(limit).all()
 
 
 def obtener_por_id(bd: Session, id_conductor: int):

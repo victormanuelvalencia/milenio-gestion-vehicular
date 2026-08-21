@@ -169,7 +169,7 @@ const handleSubmit = async () => {
     }
     emit('guardado')
     if (!props.enModal) {
-      setTimeout(() => router.push('/gastos'), 1500)
+      setTimeout(() => router.back(), 1500)
     }
   } catch (e) {
     error.value = e.response?.data?.detail || 'Error al guardar el gasto.'
@@ -272,9 +272,9 @@ watch(() => props.fechaInicial, (nuevaFecha) => {
           <button v-if="enModal" type="button" @click="$emit('cancelado')" class="inline-block px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-lg text-sm transition-colors">
             Cerrar
           </button>
-          <RouterLink v-else to="/gastos" class="inline-block px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-lg text-sm transition-colors">
+          <button v-else type="button" @click="router.back()" class="inline-block px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-lg text-sm transition-colors">
             Cerrar
-          </RouterLink>
+          </button>
         </div>
       </div>
 
@@ -399,9 +399,9 @@ watch(() => props.fechaInicial, (nuevaFecha) => {
           <button v-if="enModal" type="button" @click="$emit('cancelado')" class="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-lg transition-colors text-sm">
             Cancelar
           </button>
-          <RouterLink v-else to="/gastos" class="flex-1 py-2.5 text-center bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-lg text-sm transition-colors">
+          <button v-else type="button" @click="router.back()" class="flex-1 py-2.5 text-center bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-lg text-sm transition-colors">
             Cancelar
-          </RouterLink>
+          </button>
         </div>
       </form>
     </div>

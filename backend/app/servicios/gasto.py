@@ -37,7 +37,7 @@ def _forzar_fecha_desde_viaje(bd: Session, datos: dict) -> dict:
 
 
 def obtener_todos(bd: Session, skip: int = 0, limit: int = 10):
-    return bd.query(Gasto).offset(skip).limit(limit).all()
+    return bd.query(Gasto).order_by(Gasto.id.desc()).offset(skip).limit(limit).all()
 
 
 def obtener_por_id(bd: Session, id_gasto: int):

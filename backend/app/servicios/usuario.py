@@ -6,7 +6,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError
 
 def obtener_todos(bd: Session, skip: int = 0, limit: int = 1000):
-    return bd.query(Usuario).offset(skip).limit(limit).all()
+    return bd.query(Usuario).order_by(Usuario.id.desc()).offset(skip).limit(limit).all()
 
 def obtener_por_id(bd: Session, id_usuario: int):
     usuario = bd.query(Usuario).filter(Usuario.id == id_usuario).first()

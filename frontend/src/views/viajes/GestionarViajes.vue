@@ -88,6 +88,7 @@ const cargarDatos = async () => {
 }
 
 const formatMoneda = (v) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(v || 0)
+const formatFecha = (f) => f ? new Date(f + 'T00:00:00').toLocaleDateString('es-CO') : '—'
 
 const calcularUtilidad = (viaje) => {
   const totalGastos = (viaje.gastos || []).reduce((acc, g) => acc + parseFloat(g.valor || 0), 0)
@@ -219,17 +220,18 @@ onMounted(cargarDatos)
         <table class="w-full text-sm text-center">
           <thead class="bg-slate-800 text-white text-xs tracking-wide">
             <tr>
-              <th class="px-3 py-3 w-[20%]">Manifiesto</th>
+              <th class="px-3 py-3 w-[15%]">Manifiesto</th>
+              <th class="px-3 py-3 w-[12%]">Fecha</th>
               <th class="px-3 py-3 w-[15%]">Placa</th>
-              <th class="px-3 py-3 w-[15%]">Flete</th>
-              <th class="px-3 py-3 w-[15%]">Anticipo</th>
-              <th class="px-3 py-3 w-[15%]">Utilidad</th>
+              <th class="px-3 py-3 w-[13%]">Flete</th>
+              <th class="px-3 py-3 w-[13%]">Anticipo</th>
+              <th class="px-3 py-3 w-[12%]">Utilidad</th>
               <th class="px-3 py-3 w-[20%]">Acciones</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100">
             <tr v-if="viajesFiltrados.length === 0">
-              <td colspan="6" class="text-center py-10 text-gray-400">{{ busqueda ? 'Sin resultados para la búsqueda.' : 'No hay viajes registrados.' }}</td>
+              <td colspan="7" class="text-center py-10 text-gray-400">{{ busqueda ? 'Sin resultados para la búsqueda.' : 'No hay viajes registrados.' }}</td>
             </tr>
             <!-- Fila Normal -->
             <tr
@@ -238,6 +240,7 @@ onMounted(cargarDatos)
               class="hover:bg-slate-50 transition-colors"
             >
               <td class="px-3 py-3 font-bold text-gray-800">{{ v.numero_manifiesto }}</td>
+              <td class="px-3 py-3 font-medium text-slate-600">{{ formatFecha(v.fecha) }}</td>
               <td class="px-3 py-3 font-medium text-slate-700">{{ v.vehiculo?.placa || '—' }}</td>
               <td class="px-3 py-3 font-semibold text-blue-700">{{ formatMoneda(v.flete) }}</td>
               <td class="px-3 py-3 font-medium text-orange-600">{{ formatMoneda(v.anticipo) }}</td>

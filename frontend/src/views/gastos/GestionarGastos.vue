@@ -214,10 +214,10 @@ onMounted(cargarDatos)
             <th class="px-4 py-3 w-[10%]">Vehículo</th>
             <th class="px-4 py-3 w-[10%]">Gasto</th>
             <th class="px-4 py-3 w-[15%]">Proveedor</th>
-            <th class="px-4 py-3 w-[10%]">Factura</th>
             <th class="px-4 py-3 w-[10%]">Valor</th>
             <th class="px-4 py-3 w-[15%]">Observaciones</th>
             <th class="px-4 py-3 w-[8%]">Verificado</th>
+            <th class="px-4 py-3 w-[10%]">Factura</th>
             <th class="px-4 py-3 w-[17%]">Acciones</th>
           </tr>
         </thead>
@@ -230,12 +230,12 @@ onMounted(cargarDatos)
             <td class="px-4 py-3 font-bold text-gray-800">{{ getNombreVehiculo(g.vehiculo_id) }}</td>
             <td class="px-4 py-3 text-gray-700">{{ getNombreTipo(g.tipo_gasto_id) }}</td>
             <td class="px-4 py-3 text-gray-600">{{ g.proveedor_manual || getNombreProveedor(g.proveedor_id) }}</td>
-            <td class="px-4 py-3 text-gray-600 font-medium">{{ g.factura || '—' }}</td>
             <td class="px-4 py-3 font-semibold text-gray-800">{{ formatValor(g.valor) }}</td>
             <td class="px-4 py-3 text-gray-500 max-w-xs truncate">{{ g.observaciones || '—' }}</td>
             <td class="px-4 py-3 text-center">
               <input type="checkbox" v-model="g.verificado_dian" :disabled="!puedeEscribir" @change="actualizarVerificacion(g)" class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 disabled:opacity-50" :class="{'cursor-pointer': puedeEscribir, 'cursor-not-allowed': !puedeEscribir}" title="Verificado con DIAN" />
             </td>
+            <td class="px-4 py-3 text-gray-600 font-medium">{{ g.factura || '—' }}</td>
             <td class="px-4 py-3">
               <div class="flex items-center justify-center gap-3">
                 <button

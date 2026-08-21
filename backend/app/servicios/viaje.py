@@ -6,7 +6,7 @@ from fastapi import HTTPException, status
 
 
 def obtener_todos(bd: Session, skip: int = 0, limit: int = 1000):
-    return bd.query(Viaje).offset(skip).limit(limit).all()
+    return bd.query(Viaje).order_by(Viaje.id.desc()).offset(skip).limit(limit).all()
 
 
 def obtener_por_id(bd: Session, id_viaje: int):
