@@ -211,6 +211,12 @@ watch(() => props.fechaInicial, (nuevaFecha) => {
     formulario.value.fecha = nuevaFecha
   }
 })
+watch(viajeSeleccionado, (nuevoViaje) => {
+  if (nuevoViaje && nuevoViaje.fecha && props.modo === 'crear') {
+    const dStr = typeof nuevoViaje.fecha === 'string' ? nuevoViaje.fecha.split('T')[0] : nuevoViaje.fecha
+    formulario.value.fecha = dStr
+  }
+})
 </script>
 
 <template>
@@ -369,7 +375,7 @@ watch(() => props.fechaInicial, (nuevaFecha) => {
           <!-- Fecha: solo visible si NO viene de un viaje -->
           <div v-if="!desdeViaje">
             <label class="block text-sm font-semibold text-gray-700 mb-1">Fecha *</label>
-            <input type="date" v-model="formulario.fecha" required :readonly="esReadOnly" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 read-only:bg-gray-50 read-only:text-gray-500" />
+            <input type="date" v-model="formulario.fecha" required :readonly="esReadOnly || !!formulario.viaje_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 read-only:bg-gray-50 read-only:text-gray-500" />
           </div>
         </div>
 
