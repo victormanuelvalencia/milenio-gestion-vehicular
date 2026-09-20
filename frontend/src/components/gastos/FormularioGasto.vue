@@ -16,7 +16,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { gastosService, tiposGastoService, proveedoresService, viajesService } from '@/services/modules'
+import { gastosService, tiposGastoService, proveedoresService, viajesService, vehiculosService } from '@/services/modules'
 import SearchableSelect from '@/components/common/SearchableSelect.vue'
 
 const props = defineProps({
@@ -56,6 +56,7 @@ const mensajeExito = ref('')
 const tiposGasto = ref([])
 const proveedores = ref([])
 const viajes = ref([])
+const vehiculos = ref([])
 const usarProveedorRegistrado = ref(false)
 
 // Cuando viene desde un viaje, el manifiesto y fecha son readonly
@@ -65,6 +66,7 @@ const formulario = ref({
   fecha: props.fechaInicial || new Date().toISOString().slice(0, 10),
   valor: '',
   viaje_id: null,
+  vehiculo_id: null,
   tipo_gasto_id: '',
   proveedor_id: null,
   proveedor_manual: '',
@@ -102,14 +104,16 @@ const formatearFecha = (f) => {
 
 const cargarDependencias = async () => {
   try {
-    const [rTipos, rProv, rViajes] = await Promise.all([
+    const [rTipos, rProv, rViajes, rVehiculos] = await Promise.all([
       tiposGastoService.obtenerTodos(),
       proveedoresService.obtenerTodos(),
-      viajesService.obtenerTodos()
+      viajesService.obtenerTodos(),
+      vehiculosService.obtenerTodos()
     ])
     tiposGasto.value = rTipos.data
     proveedores.value = rProv.data
     viajes.value = rViajes.data
+    vehiculos.value = rVehiculos.data
   } catch {
     error.value = 'Error al cargar datos de apoyo.'
   }
@@ -131,6 +135,7 @@ const formularioVacio = () => ({
   fecha: props.fechaInicial || new Date().toISOString().slice(0, 10),
   valor: '',
   viaje_id: props.viajeIdInicial || null,
+  vehiculo_id: null,
   tipo_gasto_id: '',
   proveedor_id: null,
   proveedor_manual: '',
@@ -155,6 +160,11 @@ const handleSubmit = async () => {
   
   if (!datos.factura) {
     datos.factura = null
+  }
+
+  // Limpiar vehiculo_id si hay un viaje seleccionado para que el backend lo deduzca
+  if (datos.viaje_id) {
+    datos.vehiculo_id = null
   }
 
   try {
@@ -307,14 +317,13 @@ watch(() => props.fechaInicial, (nuevaFecha) => {
         <!-- Selector de Manifiesto (solo si NO viene desde un viaje) -->
         <div v-else>
           <label class="block text-sm font-semibold text-gray-700 mb-1">
-            Número de Manifiesto (Viaje) *
+            Número de Manifiesto (Viaje)
           </label>
           <SearchableSelect
             v-model="formulario.viaje_id"
-            :options="viajes.map(v => ({ value: v.id, label: `${v.numero_manifiesto} — ${v.origen} → ${v.destino}` }))"
+            :options="[{value: null, label: 'Ninguno (Sin manifiesto)'}, ...viajes.map(v => ({ value: v.id, label: `${v.numero_manifiesto} — ${v.origen} → ${v.destino}` }))]"
             placeholder="Seleccionar manifiesto..."
             :disabled="esReadOnly"
-            required
           />
           <p v-if="viajes.length === 0 && !esReadOnly" class="text-xs text-orange-500 mt-1">
             No hay viajes registrados.
@@ -330,6 +339,20 @@ watch(() => props.fechaInicial, (nuevaFecha) => {
             Vehículo asociado:
             <span class="font-bold">{{ viajeSeleccionado.vehiculo?.placa || '—' }}</span>
           </p>
+        </div>
+
+        <!-- Selector de Vehículo si no hay viaje seleccionado -->
+        <div v-if="!formulario.viaje_id && !desdeViaje">
+          <label class="block text-sm font-semibold text-gray-700 mb-1">
+            Vehículo *
+          </label>
+          <SearchableSelect
+            v-model="formulario.vehiculo_id"
+            :options="vehiculos.map(v => ({ value: v.id, label: `${v.placa} - ${v.marca || ''}` }))"
+            placeholder="Seleccionar vehículo..."
+            :disabled="esReadOnly"
+            required
+          />
         </div>
 
         <div class="grid grid-cols-2 gap-4">
@@ -391,7 +414,7 @@ watch(() => props.fechaInicial, (nuevaFecha) => {
         <div v-if="!esReadOnly" class="flex gap-3 pt-2">
           <button
             type="submit"
-            :disabled="cargando || (!formulario.viaje_id && !desdeViaje)"
+            :disabled="cargando || (!formulario.viaje_id && !formulario.vehiculo_id && !desdeViaje)"
             class="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold rounded-lg text-sm shadow-md transition-colors"
           >
             {{ cargando ? 'Guardando...' : (modo === 'editar' ? 'Actualizar Gasto' : 'Registrar Gasto') }}
